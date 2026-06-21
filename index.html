@@ -1,1415 +1,1790 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en-GB">
-<head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Solstice Crown - weave a flower crown for midsummer</title>
-  <meta name="description" content="Weave a flower crown for the summer solstice. A quiet little green-witch ritual." />
-  <link rel="icon" type="image/png" href="flowers/bluebell.png" />
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Solstice Crown - weave a flower crown for midsummer</title>
+    <meta
+      name="description"
+      content="Weave a flower crown for the summer solstice. A quiet little green-witch ritual."
+    />
+    <link rel="icon" type="image/png" href="flowers/bluebell.png" />
 
-  <link rel="preconnect" href="https://fonts.googleapis.com" />
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,500;0,600;1,400&family=EB+Garamond:ital,wght@0,400;0,500;1,400&display=swap" rel="stylesheet" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,500;0,600;1,400&family=EB+Garamond:ital,wght@0,400;0,500;1,400&display=swap"
+      rel="stylesheet"
+    />
 
-  <style>
-    :root {
-      /* deep forest and moss */
-      --forest-deep: #16201a;
-      --forest: #1f2d23;
-      --moss-dark: #34442f;
-      --moss: #4f6240;
-      --moss-soft: #6f8156;
+    <style>
+      :root {
+        /* deep forest and moss */
+        --forest-deep: #16201a;
+        --forest: #1f2d23;
+        --moss-dark: #34442f;
+        --moss: #4f6240;
+        --moss-soft: #6f8156;
 
-      /* parchment and cream */
-      --parchment: #efe5cf;
-      --parchment-dim: #e3d6ba;
-      --cream: #f6efdd;
+        /* parchment and cream */
+        --parchment: #efe5cf;
+        --parchment-dim: #e3d6ba;
+        --cream: #f6efdd;
 
-      /* muted brass-gold accent */
-      --brass: #b08d4f;
-      --brass-bright: #c8a662;
-      --brass-dim: #8a6f3e;
+        /* muted brass-gold accent */
+        --brass: #b08d4f;
+        --brass-bright: #c8a662;
+        --brass-dim: #8a6f3e;
 
-      /* dusky botanical tones */
-      --dusk-plum: #5b4a55;
-      --dusk-sage: #7d8a6e;
+        /* dusky botanical tones */
+        --dusk-plum: #5b4a55;
+        --dusk-sage: #7d8a6e;
 
-      --ink: #2a2f25;
+        --ink: #2a2f25;
 
-      --display: "Playfair Display", Georgia, serif;
-      --body: "EB Garamond", Georgia, serif;
+        --display: "Playfair Display", Georgia, serif;
+        --body: "EB Garamond", Georgia, serif;
 
-      /* crown scales with viewport height so it shares one screen */
-      --stage-max: clamp(210px, 38vh, 390px);
-      --radius: 6px;
+        /* crown scales with viewport height so it shares one screen */
+        --stage-max: clamp(210px, 38vh, 390px);
+        --radius: 6px;
 
-      /* placed flower diameter as a share of the stage, tuned so 24 sit
+        /* placed flower diameter as a share of the stage, tuned so 24 sit
          shoulder to shoulder and slightly overlap around the ring */
-      --placed-size: 26%;
-      /* split point for the single bridging flower at 6 o'clock: its bloom half
+        --placed-size: 26%;
+        /* split point for the single bridging flower at 6 o'clock: its bloom half
          keeps the top, its stem half the bottom, just below the midline */
-      --bloom-bottom-inset: 44%; /* bloom half keeps top 56% */
-      --stem-top-inset: 50%;     /* stem half keeps bottom 50% */
-    }
+        --bloom-bottom-inset: 44%; /* bloom half keeps top 56% */
+        --stem-top-inset: 50%; /* stem half keeps bottom 50% */
+      }
 
-    * { box-sizing: border-box; }
+      * {
+        box-sizing: border-box;
+      }
 
-    html, body { margin: 0; padding: 0; }
+      html,
+      body {
+        margin: 0;
+        padding: 0;
+      }
 
-    body {
-      font-family: var(--body);
-      color: var(--parchment);
-      background-color: var(--forest-deep);
-      background-image:
-        radial-gradient(120% 90% at 50% -10%, rgba(79, 98, 64, 0.35), transparent 60%),
-        radial-gradient(100% 120% at 50% 120%, rgba(22, 32, 26, 0.9), transparent 55%);
-      min-height: 100vh;
-      font-size: 18px;
-      line-height: 1.55;
-      -webkit-font-smoothing: antialiased;
-    }
+      body {
+        font-family: var(--body);
+        color: var(--parchment);
+        background-color: var(--forest-deep);
+        background-image:
+          radial-gradient(
+            120% 90% at 50% -10%,
+            rgba(79, 98, 64, 0.35),
+            transparent 60%
+          ),
+          radial-gradient(
+            100% 120% at 50% 120%,
+            rgba(22, 32, 26, 0.9),
+            transparent 55%
+          );
+        min-height: 100vh;
+        font-size: 18px;
+        line-height: 1.55;
+        -webkit-font-smoothing: antialiased;
+      }
 
-    .page {
-      max-width: 1200px;
-      margin: 0 auto;
-      padding: clamp(0.75rem, 2.2vh, 1.5rem) clamp(1rem, 4vw, 2.5rem) clamp(1rem, 3vh, 2rem);
-    }
+      .page {
+        max-width: 1200px;
+        margin: 0 auto;
+        padding: clamp(0.75rem, 2.2vh, 1.5rem) clamp(1rem, 4vw, 2.5rem)
+          clamp(1rem, 3vh, 2rem);
+      }
 
-    /* ---- Masthead ---- */
-    .masthead { text-align: center; margin-bottom: clamp(1.5rem, 4vh, 3rem); }
+      /* ---- Masthead ---- */
+      .masthead {
+        text-align: center;
+        margin-bottom: clamp(1.5rem, 4vh, 3rem);
+      }
 
-    .masthead .eyebrow {
-      font-family: var(--body);
-      letter-spacing: 0.4em;
-      text-transform: uppercase;
-      font-size: 0.6rem;
-      color: var(--brass-bright);
-      margin: 0 0 0.4rem;
-      padding-left: 0.4em;
-    }
+      .masthead .eyebrow {
+        font-family: var(--body);
+        letter-spacing: 0.4em;
+        text-transform: uppercase;
+        font-size: 0.6rem;
+        color: var(--brass-bright);
+        margin: 0 0 0.4rem;
+        padding-left: 0.4em;
+      }
 
-    .masthead h1 {
-      font-family: var(--display);
-      font-weight: 500;
-      font-size: clamp(1.65rem, 4.2vh, 2.6rem);
-      line-height: 1.02;
-      margin: 0;
-      color: var(--cream);
-      text-shadow: 0 1px 0 rgba(0, 0, 0, 0.35);
-    }
+      .masthead h1 {
+        font-family: var(--display);
+        font-weight: 500;
+        font-size: clamp(1.65rem, 4.2vh, 2.6rem);
+        line-height: 1.02;
+        margin: 0;
+        color: var(--cream);
+        text-shadow: 0 1px 0 rgba(0, 0, 0, 0.35);
+      }
 
-    .masthead .subtitle {
-      font-style: italic;
-      font-size: clamp(0.82rem, 1.7vh, 1.05rem);
-      color: var(--parchment-dim);
-      margin: 0.35rem auto 0;
-      max-width: 34ch;
-    }
+      .masthead .subtitle {
+        font-style: italic;
+        font-size: clamp(0.82rem, 1.7vh, 1.05rem);
+        color: var(--parchment-dim);
+        margin: 0.35rem auto 0;
+        max-width: 34ch;
+      }
 
-    .rule {
-      width: 96px;
-      height: 1px;
-      margin: clamp(0.5rem, 1.2vh, 0.9rem) auto 0;
-      border: 0;
-      background: linear-gradient(90deg, transparent, var(--brass), transparent);
-      position: relative;
-    }
-    .rule::after {
-      content: "\2766";
-      position: absolute;
-      top: 50%;
-      left: 50%;
-      transform: translate(-50%, -50%);
-      color: var(--brass-bright);
-      font-size: 1rem;
-      background: var(--forest-deep);
-      padding: 0 0.5rem;
-      line-height: 1;
-    }
+      .rule {
+        width: 96px;
+        height: 1px;
+        margin: clamp(0.5rem, 1.2vh, 0.9rem) auto 0;
+        border: 0;
+        background: linear-gradient(
+          90deg,
+          transparent,
+          var(--brass),
+          transparent
+        );
+        position: relative;
+      }
+      .rule::after {
+        content: "\2766";
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        color: var(--brass-bright);
+        font-size: 1rem;
+        background: var(--forest-deep);
+        padding: 0 0.5rem;
+        line-height: 1;
+      }
 
-    /* ---- Layout: single centred column ---- */
-    .studio {
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      gap: clamp(2rem, 6vh, 4rem);
-    }
+      /* ---- Layout: single centred column ---- */
+      .studio {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: clamp(2rem, 6vh, 4rem);
+      }
 
-    /* ---- Crown stage: the hero ---- */
-    .stage-wrap { display: flex; flex-direction: column; align-items: center; width: 100%; }
+      /* ---- Crown stage: the hero ---- */
+      .stage-wrap {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        width: 100%;
+      }
 
-    /* The crown stays centred on the page (balanced 1fr columns either side),
+      /* The crown stays centred on the page (balanced 1fr columns either side),
        with its selector living in the right-hand column, pushed further right. */
-    .stage-row {
-      display: grid;
-      grid-template-columns: 1fr auto 1fr;
-      align-items: center;
-      width: 100%;
-    }
+      .stage-row {
+        display: grid;
+        grid-template-columns: 1fr auto 1fr;
+        align-items: center;
+        width: 100%;
+      }
 
-    /* Plain stage: no panel, border or background - the wreath sits directly
+      /* Plain stage: no panel, border or background - the wreath sits directly
        on the page. (Backdrop framing returns later, at the save step.) */
-    .stage {
-      position: relative;
-      grid-column: 2;
-      justify-self: center;
-      width: var(--stage-max);
-      max-width: 100%;
-      aspect-ratio: 1 / 1;
-    }
+      .stage {
+        position: relative;
+        grid-column: 2;
+        justify-self: center;
+        width: var(--stage-max);
+        max-width: 100%;
+        aspect-ratio: 1 / 1;
+      }
 
-    .stage__backdrop {
-      position: absolute;
-      inset: 0;
-      width: 100%;
-      height: 100%;
-      object-fit: cover;
-      transition: opacity 0.5s ease;
-    }
-    .stage__backdrop[hidden] { display: none; }
+      .stage__backdrop {
+        position: absolute;
+        inset: 0;
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+        transition: opacity 0.5s ease;
+      }
+      .stage__backdrop[hidden] {
+        display: none;
+      }
 
-    .stage__wreath {
-      position: absolute;
-      top: 50%;
-      left: 50%;
-      width: 100%;
-      height: 100%;
-      transform: translate(-50%, -50%);
-      object-fit: contain;
-      filter: drop-shadow(0 6px 14px rgba(0, 0, 0, 0.45));
-      pointer-events: none;
-    }
+      .stage__wreath {
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        width: 100%;
+        height: 100%;
+        transform: translate(-50%, -50%);
+        object-fit: contain;
+        filter: drop-shadow(0 6px 14px rgba(0, 0, 0, 0.45));
+        pointer-events: none;
+      }
 
-    .stage__caption {
-      margin: 0.5rem 0 0;
-      font-style: italic;
-      font-size: 0.85rem;
-      color: var(--parchment-dim);
-      text-align: center;
-    }
+      .stage__caption {
+        margin: 0.5rem 0 0;
+        font-style: italic;
+        font-size: 0.85rem;
+        color: var(--parchment-dim);
+        text-align: center;
+      }
 
-    /* ---- Hooks: 24 subtle anchor points around the foliage band ---- */
-    .hooks { position: absolute; inset: 0; pointer-events: none; z-index: 1; }
-    .hook {
-      position: absolute;
-      width: 9px;
-      height: 9px;
-      transform: translate(-50%, -50%);
-      border-radius: 50%;
-      background: rgba(239, 229, 207, 0.14);
-      box-shadow: 0 0 0 1px rgba(0, 0, 0, 0.12);
-      transition: background 0.2s ease, box-shadow 0.25s ease,
-        width 0.15s ease, height 0.15s ease;
-    }
-    /* glow when a flower is dragged over this hook */
-    .hook--active {
-      width: 17px;
-      height: 17px;
-      background: var(--brass-bright);
-      box-shadow: 0 0 14px 5px rgba(200, 166, 98, 0.55);
-    }
+      /* ---- Hooks: 24 subtle anchor points around the foliage band ---- */
+      .hooks {
+        position: absolute;
+        inset: 0;
+        pointer-events: none;
+        z-index: 1;
+      }
+      .hook {
+        position: absolute;
+        width: 9px;
+        height: 9px;
+        transform: translate(-50%, -50%);
+        border-radius: 50%;
+        background: rgba(239, 229, 207, 0.14);
+        box-shadow: 0 0 0 1px rgba(0, 0, 0, 0.12);
+        transition:
+          background 0.2s ease,
+          box-shadow 0.25s ease,
+          width 0.15s ease,
+          height 0.15s ease;
+      }
+      /* glow when a flower is dragged over this hook */
+      .hook--active {
+        width: 17px;
+        height: 17px;
+        background: var(--brass-bright);
+        box-shadow: 0 0 14px 5px rgba(200, 166, 98, 0.55);
+      }
 
-    /* ---- Placed flowers, single layer woven in a spiral z-order ----
+      /* ---- Placed flowers, single layer woven in a spiral z-order ----
        z-index decreases clockwise from the 6:30 flower (top of stack) round to
        the 5:30 flower (bottom). The lone 6:00 flower is split into bloom and
        stem halves to bridge that seam cleanly. */
-    .placed-layer { position: absolute; inset: 0; pointer-events: none; z-index: 2; }
+      .placed-layer {
+        position: absolute;
+        inset: 0;
+        pointer-events: none;
+        z-index: 2;
+      }
 
-    .placed {
-      position: absolute;
-      width: var(--placed-size);
-      aspect-ratio: 1 / 1;
-      /* centred on its hook, rotated tangent to the ring; the clip-path is in
+      .placed {
+        position: absolute;
+        width: var(--placed-size);
+        aspect-ratio: 1 / 1;
+        /* centred on its hook, rotated tangent to the ring; the clip-path is in
          local space so the split rotates with the flower */
-      transform: translate(-50%, -50%) rotate(var(--rot, 0deg));
-      /* grabbable to move/remove; the layer itself stays click-through so empty
+        transform: translate(-50%, -50%) rotate(var(--rot, 0deg));
+        /* grabbable to move/remove; the layer itself stays click-through so empty
          ring areas still receive taps. touch-action lets placed flowers drag
          on touch instead of scrolling the page. */
-      pointer-events: auto;
-      touch-action: none;
-      cursor: grab;
-    }
-    .placed:active { cursor: grabbing; }
-    /* clip classes used only by the single bridging flower at 6 o'clock */
-    .placed--bloom { clip-path: inset(0 0 var(--bloom-bottom-inset) 0); }
-    .placed--stem { clip-path: inset(var(--stem-top-inset) 0 0 0); }
-    .placed img {
-      width: 100%;
-      height: 100%;
-      object-fit: contain;
-      display: block;
-      filter: drop-shadow(0 3px 6px rgba(0, 0, 0, 0.4));
-    }
+        pointer-events: auto;
+        touch-action: none;
+        cursor: grab;
+      }
+      .placed:active {
+        cursor: grabbing;
+      }
+      /* clip classes used only by the single bridging flower at 6 o'clock */
+      .placed--bloom {
+        clip-path: inset(0 0 var(--bloom-bottom-inset) 0);
+      }
+      .placed--stem {
+        clip-path: inset(var(--stem-top-inset) 0 0 0);
+      }
+      .placed img {
+        width: 100%;
+        height: 100%;
+        object-fit: contain;
+        display: block;
+        filter: drop-shadow(0 3px 6px rgba(0, 0, 0, 0.4));
+      }
 
-    /* ---- Drag ghost following the cursor ---- */
-    .ghost {
-      position: fixed;
-      left: 0;
-      top: 0;
-      transform: translate(-50%, -50%);
-      aspect-ratio: 1 / 1;
-      pointer-events: none;
-      z-index: 2000;
-      opacity: 0.8;
-      filter: drop-shadow(0 6px 12px rgba(0, 0, 0, 0.5));
-      transition: opacity 0.2s ease, transform 0.2s ease;
-    }
-    /* over the remove zone (off-ring) while moving a placed flower */
-    .ghost--remove {
-      opacity: 0.3;
-      transform: translate(-50%, -50%) scale(0.88);
-    }
+      /* ---- Drag ghost following the cursor ---- */
+      .ghost {
+        position: fixed;
+        left: 0;
+        top: 0;
+        transform: translate(-50%, -50%);
+        aspect-ratio: 1 / 1;
+        pointer-events: none;
+        z-index: 2000;
+        opacity: 0.8;
+        filter: drop-shadow(0 6px 12px rgba(0, 0, 0, 0.5));
+        transition:
+          opacity 0.2s ease,
+          transform 0.2s ease;
+      }
+      /* over the remove zone (off-ring) while moving a placed flower */
+      .ghost--remove {
+        opacity: 0.3;
+        transform: translate(-50%, -50%) scale(0.88);
+      }
 
-    /* ---- Clear control: small, quiet, near the crown ---- */
-    .crown-clear {
-      margin-top: 0.7rem;
-      font-family: var(--body);
-      font-size: 0.85rem;
-      letter-spacing: 0.06em;
-      color: var(--dusk-sage);
-      background: none;
-      border: 0;
-      cursor: pointer;
-      transition: color 0.2s ease;
-    }
-    .crown-clear:hover { color: var(--parchment); }
-    .crown-clear:focus-visible { outline: 2px solid var(--brass-bright); outline-offset: 3px; }
+      /* ---- Clear control: small, quiet, near the crown ---- */
+      .crown-clear {
+        margin-top: 0.7rem;
+        font-family: var(--body);
+        font-size: 0.85rem;
+        letter-spacing: 0.06em;
+        color: var(--dusk-sage);
+        background: none;
+        border: 0;
+        cursor: pointer;
+        transition: color 0.2s ease;
+      }
+      .crown-clear:hover {
+        color: var(--parchment);
+      }
+      .crown-clear:focus-visible {
+        outline: 2px solid var(--brass-bright);
+        outline-offset: 3px;
+      }
 
-    /* ---- Scroll cue: a quiet drifting chevron hinting at more below ---- */
-    .scroll-cue {
-      position: fixed;
-      left: 50%;
-      bottom: clamp(0.75rem, 2.5vh, 1.5rem);
-      transform: translateX(-50%);
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      gap: 0.35rem;
-      color: var(--brass);
-      pointer-events: none;
-      z-index: 1500;
-      opacity: 0.75;
-      transition: opacity 0.6s ease;
-    }
-    .scroll-cue__label {
-      font-family: var(--body);
-      font-style: italic;
-      font-size: 0.78rem;
-      letter-spacing: 0.04em;
-      color: var(--dusk-sage);
-    }
-    .scroll-cue svg {
-      width: 22px;
-      height: 22px;
-      animation: cue-drift 2.2s ease-in-out infinite;
-    }
-    .scroll-cue.is-hidden { opacity: 0; }
-    .scroll-cue--fits { display: none; }
+      /* ---- Scroll cue: a quiet drifting chevron hinting at more below ---- */
+      .scroll-cue {
+        position: fixed;
+        left: 50%;
+        bottom: clamp(0.75rem, 2.5vh, 1.5rem);
+        transform: translateX(-50%);
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: 0.35rem;
+        color: var(--brass);
+        pointer-events: none;
+        z-index: 1500;
+        opacity: 0.75;
+        transition: opacity 0.6s ease;
+      }
+      .scroll-cue__label {
+        font-family: var(--body);
+        font-style: italic;
+        font-size: 0.78rem;
+        letter-spacing: 0.04em;
+        color: var(--dusk-sage);
+      }
+      .scroll-cue svg {
+        width: 22px;
+        height: 22px;
+        animation: cue-drift 2.2s ease-in-out infinite;
+      }
+      .scroll-cue.is-hidden {
+        opacity: 0;
+      }
+      .scroll-cue--fits {
+        display: none;
+      }
 
-    /* ---- Save preview overlay ---- */
-    .preview {
-      position: fixed;
-      inset: 0;
-      z-index: 3000;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      padding: clamp(1rem, 4vw, 2rem);
-      background: rgba(11, 16, 13, 0.82);
-      -webkit-backdrop-filter: blur(3px);
-      backdrop-filter: blur(3px);
-    }
-    .preview[hidden] { display: none; }
+      /* ---- Save preview overlay ---- */
+      .preview {
+        position: fixed;
+        inset: 0;
+        z-index: 3000;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        padding: clamp(1rem, 4vw, 2rem);
+        background: rgba(11, 16, 13, 0.82);
+        -webkit-backdrop-filter: blur(3px);
+        backdrop-filter: blur(3px);
+      }
+      .preview[hidden] {
+        display: none;
+      }
 
-    .preview__dialog {
-      position: relative;
-      width: 100%;
-      max-width: min(92vw, 540px);
-      background:
-        linear-gradient(180deg, rgba(246, 239, 221, 0.04), rgba(0, 0, 0, 0.06)),
-        var(--forest);
-      border: 1px solid rgba(176, 141, 79, 0.35);
-      border-radius: 10px;
-      padding: clamp(1.5rem, 4vw, 2.25rem);
-      box-shadow: 0 30px 70px -24px rgba(0, 0, 0, 0.85);
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      gap: clamp(1rem, 3vh, 1.6rem);
-    }
+      .preview__dialog {
+        position: relative;
+        width: 100%;
+        max-width: min(92vw, 540px);
+        background:
+          linear-gradient(
+            180deg,
+            rgba(246, 239, 221, 0.04),
+            rgba(0, 0, 0, 0.06)
+          ),
+          var(--forest);
+        border: 1px solid rgba(176, 141, 79, 0.35);
+        border-radius: 10px;
+        padding: clamp(1.5rem, 4vw, 2.25rem);
+        box-shadow: 0 30px 70px -24px rgba(0, 0, 0, 0.85);
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: clamp(1rem, 3vh, 1.6rem);
+      }
 
-    .preview__title {
-      font-family: var(--display);
-      font-weight: 500;
-      font-size: 1.35rem;
-      color: var(--cream);
-      margin: 0;
-    }
+      .preview__title {
+        font-family: var(--display);
+        font-weight: 500;
+        font-size: 1.35rem;
+        color: var(--cream);
+        margin: 0;
+      }
 
-    .preview__close {
-      position: absolute;
-      top: 0.55rem;
-      right: 0.7rem;
-      width: 34px;
-      height: 34px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      border: 0;
-      background: none;
-      color: var(--dusk-sage);
-      font-size: 1.4rem;
-      line-height: 1;
-      cursor: pointer;
-      transition: color 0.2s ease;
-    }
-    .preview__close:hover { color: var(--cream); }
-    .preview__close:focus-visible { outline: 2px solid var(--brass-bright); outline-offset: 2px; }
+      .preview__close {
+        position: absolute;
+        top: 0.55rem;
+        right: 0.7rem;
+        width: 34px;
+        height: 34px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        border: 0;
+        background: none;
+        color: var(--dusk-sage);
+        font-size: 1.4rem;
+        line-height: 1;
+        cursor: pointer;
+        transition: color 0.2s ease;
+      }
+      .preview__close:hover {
+        color: var(--cream);
+      }
+      .preview__close:focus-visible {
+        outline: 2px solid var(--brass-bright);
+        outline-offset: 2px;
+      }
 
-    .preview__stage {
-      position: relative;
-      width: min(74vw, 340px);
-      aspect-ratio: 1 / 1;
-      border-radius: 6px;
-      overflow: hidden;
-      box-shadow: inset 0 0 0 1px rgba(176, 141, 79, 0.25);
-    }
-    .preview__bg {
-      position: absolute;
-      inset: 0;
-      width: 100%;
-      height: 100%;
-      object-fit: cover;
-    }
-    .preview__bg[hidden] { display: none; }
-    /* faint checkerboard to show a see-through (transparent) backdrop */
-    .preview__checker {
-      position: absolute;
-      inset: 0;
-      background-color: #20271f;
-      background-image:
-        linear-gradient(45deg, rgba(239, 229, 207, 0.08) 25%, transparent 25%, transparent 75%, rgba(239, 229, 207, 0.08) 75%),
-        linear-gradient(45deg, rgba(239, 229, 207, 0.08) 25%, transparent 25%, transparent 75%, rgba(239, 229, 207, 0.08) 75%);
-      background-size: 22px 22px;
-      background-position: 0 0, 11px 11px;
-    }
-    .preview__checker[hidden] { display: none; }
-    .preview__wreath {
-      position: absolute;
-      inset: 0;
-      width: 100%;
-      height: 100%;
-      object-fit: contain;
-    }
-    .preview__placed { position: absolute; inset: 0; }
+      .preview__stage {
+        position: relative;
+        width: min(74vw, 340px);
+        aspect-ratio: 1 / 1;
+        border-radius: 6px;
+        overflow: hidden;
+        box-shadow: inset 0 0 0 1px rgba(176, 141, 79, 0.25);
+      }
+      .preview__bg {
+        position: absolute;
+        inset: 0;
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+      }
+      .preview__bg[hidden] {
+        display: none;
+      }
+      /* faint checkerboard to show a see-through (transparent) backdrop */
+      .preview__checker {
+        position: absolute;
+        inset: 0;
+        background-color: #20271f;
+        background-image:
+          linear-gradient(
+            45deg,
+            rgba(239, 229, 207, 0.08) 25%,
+            transparent 25%,
+            transparent 75%,
+            rgba(239, 229, 207, 0.08) 75%
+          ),
+          linear-gradient(
+            45deg,
+            rgba(239, 229, 207, 0.08) 25%,
+            transparent 25%,
+            transparent 75%,
+            rgba(239, 229, 207, 0.08) 75%
+          );
+        background-size: 22px 22px;
+        background-position:
+          0 0,
+          11px 11px;
+      }
+      .preview__checker[hidden] {
+        display: none;
+      }
+      .preview__wreath {
+        position: absolute;
+        inset: 0;
+        width: 100%;
+        height: 100%;
+        object-fit: contain;
+      }
+      .preview__placed {
+        position: absolute;
+        inset: 0;
+      }
 
-    .preview__backdrops {
-      display: flex;
-      align-items: center;
-      gap: 0.45rem;
-      justify-content: center;
-    }
-    .pv-toggle {
-      font-family: var(--body);
-      font-size: 0.98rem;
-      color: var(--dusk-sage);
-      background: none;
-      border: 0;
-      padding: 0.2rem 0.4rem;
-      cursor: pointer;
-      letter-spacing: 0.03em;
-      transition: color 0.2s ease;
-    }
-    .pv-toggle:hover { color: var(--parchment); }
-    .pv-toggle:focus-visible { outline: 2px solid var(--brass-bright); outline-offset: 3px; }
-    .pv-toggle[aria-pressed="true"] {
-      color: var(--brass-bright);
-      border-bottom: 1px solid var(--brass);
-    }
-    .pv-sep { color: var(--moss); user-select: none; }
+      .preview__backdrops {
+        display: flex;
+        align-items: center;
+        gap: 0.45rem;
+        justify-content: center;
+      }
+      .pv-toggle {
+        font-family: var(--body);
+        font-size: 0.98rem;
+        color: var(--dusk-sage);
+        background: none;
+        border: 0;
+        padding: 0.2rem 0.4rem;
+        cursor: pointer;
+        letter-spacing: 0.03em;
+        transition: color 0.2s ease;
+      }
+      .pv-toggle:hover {
+        color: var(--parchment);
+      }
+      .pv-toggle:focus-visible {
+        outline: 2px solid var(--brass-bright);
+        outline-offset: 3px;
+      }
+      .pv-toggle[aria-pressed="true"] {
+        color: var(--brass-bright);
+        border-bottom: 1px solid var(--brass);
+      }
+      .pv-sep {
+        color: var(--moss);
+        user-select: none;
+      }
 
-    .preview__download {
-      font-family: var(--body);
-      font-size: 1rem;
-      letter-spacing: 0.05em;
-      color: var(--forest-deep);
-      background: var(--brass);
-      border: 1px solid var(--brass-bright);
-      border-radius: 6px;
-      padding: 0.55rem 1.6rem;
-      cursor: pointer;
-      transition: background 0.25s ease;
-    }
-    .preview__download:hover { background: var(--brass-bright); }
-    .preview__download:focus-visible { outline: 2px solid var(--cream); outline-offset: 2px; }
+      .preview__download {
+        font-family: var(--body);
+        font-size: 1rem;
+        letter-spacing: 0.05em;
+        color: var(--forest-deep);
+        background: var(--brass);
+        border: 1px solid var(--brass-bright);
+        border-radius: 6px;
+        padding: 0.55rem 1.6rem;
+        cursor: pointer;
+        transition: background 0.25s ease;
+      }
+      .preview__download:hover {
+        background: var(--brass-bright);
+      }
+      .preview__download:focus-visible {
+        outline: 2px solid var(--cream);
+        outline-offset: 2px;
+      }
 
-    @keyframes cue-drift {
-      0%, 100% { transform: translateY(0); opacity: 0.55; }
-      50% { transform: translateY(5px); opacity: 1; }
-    }
-    @media (prefers-reduced-motion: reduce) {
-      .scroll-cue svg { animation: none; }
-    }
+      @keyframes cue-drift {
+        0%,
+        100% {
+          transform: translateY(0);
+          opacity: 0.55;
+        }
+        50% {
+          transform: translateY(5px);
+          opacity: 1;
+        }
+      }
+      @media (prefers-reduced-motion: reduce) {
+        .scroll-cue svg {
+          animation: none;
+        }
+      }
 
-    /* ---- Control strip: slim, minimal, centred ---- */
-    .controls {
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      gap: 0.6rem;
-    }
+      /* ---- Control strip: slim, minimal, centred ---- */
+      .controls {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: 0.6rem;
+      }
 
-    /* right-hand rail: wreath thumbnails with the save control beneath them,
+      /* right-hand rail: wreath thumbnails with the save control beneath them,
        sitting in the right column and nudged further right of the crown */
-    .right-rail {
-      grid-column: 3;
-      justify-self: start;
-      margin-left: clamp(1rem, 4vw, 3rem);
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      gap: 0.9rem;
-    }
+      .right-rail {
+        grid-column: 3;
+        justify-self: start;
+        margin-left: clamp(1rem, 4vw, 3rem);
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: 0.9rem;
+      }
 
-    /* wreath choices: three compact circular thumbnails, stacked vertically */
-    .wreath-choices {
-      display: flex;
-      flex-direction: column;
-      gap: 0.55rem;
-      justify-content: center;
-    }
+      /* wreath choices: three compact circular thumbnails, stacked vertically */
+      .wreath-choices {
+        display: flex;
+        flex-direction: column;
+        gap: 0.55rem;
+        justify-content: center;
+      }
 
-    /* save control: a small, quiet floppy-disc throwback in muted brass */
-    .save-btn {
-      width: 44px;
-      height: 44px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      background: none;
-      border: 1px solid rgba(176, 141, 79, 0.3);
-      border-radius: 50%;
-      color: var(--brass);
-      cursor: pointer;
-      opacity: 0.72;
-      transition: opacity 0.25s ease, border-color 0.25s ease,
-        color 0.25s ease, transform 0.2s ease;
-    }
-    .save-btn:hover {
-      opacity: 1;
-      border-color: var(--brass-bright);
-      color: var(--cream);
-      transform: scale(1.05);
-    }
-    .save-btn:focus-visible { outline: 2px solid var(--brass-bright); outline-offset: 2px; }
-    .save-btn svg { width: 23px; height: 23px; }
-    .wreath-choice {
-      width: 44px;
-      height: 44px;
-      padding: 3px;
-      background: none;
-      border: 1px solid rgba(176, 141, 79, 0.3);
-      border-radius: 50%;
-      cursor: pointer;
-      opacity: 0.62;
-      transition: border-color 0.25s ease, opacity 0.25s ease, transform 0.2s ease;
-    }
-    .wreath-choice:hover { opacity: 1; transform: scale(1.05); }
-    .wreath-choice:focus-visible { outline: 2px solid var(--brass-bright); outline-offset: 2px; }
-    .wreath-choice[aria-pressed="true"] {
-      opacity: 1;
-      border-color: var(--brass-bright);
-      box-shadow: 0 0 0 1px rgba(200, 166, 98, 0.4);
-    }
-    .wreath-choice img { width: 100%; height: 100%; object-fit: contain; display: block; }
+      /* save control: a small, quiet floppy-disc throwback in muted brass */
+      .save-btn {
+        width: 44px;
+        height: 44px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        background: none;
+        border: 1px solid rgba(176, 141, 79, 0.3);
+        border-radius: 50%;
+        color: var(--brass);
+        cursor: pointer;
+        opacity: 0.72;
+        transition:
+          opacity 0.25s ease,
+          border-color 0.25s ease,
+          color 0.25s ease,
+          transform 0.2s ease;
+      }
+      .save-btn:hover {
+        opacity: 1;
+        border-color: var(--brass-bright);
+        color: var(--cream);
+        transform: scale(1.05);
+      }
+      .save-btn:focus-visible {
+        outline: 2px solid var(--brass-bright);
+        outline-offset: 2px;
+      }
+      .save-btn svg {
+        width: 23px;
+        height: 23px;
+      }
+      .wreath-choice {
+        width: 44px;
+        height: 44px;
+        padding: 3px;
+        background: none;
+        border: 1px solid rgba(176, 141, 79, 0.3);
+        border-radius: 50%;
+        cursor: pointer;
+        opacity: 0.62;
+        transition:
+          border-color 0.25s ease,
+          opacity 0.25s ease,
+          transform 0.2s ease;
+      }
+      .wreath-choice:hover {
+        opacity: 1;
+        transform: scale(1.05);
+      }
+      .wreath-choice:focus-visible {
+        outline: 2px solid var(--brass-bright);
+        outline-offset: 2px;
+      }
+      .wreath-choice[aria-pressed="true"] {
+        opacity: 1;
+        border-color: var(--brass-bright);
+        box-shadow: 0 0 0 1px rgba(200, 166, 98, 0.4);
+      }
+      .wreath-choice img {
+        width: 100%;
+        height: 100%;
+        object-fit: contain;
+        display: block;
+      }
 
-    /* ---- Flower press ---- */
-    .press { width: 100%; text-align: center; }
+      /* ---- Flower press ---- */
+      .press {
+        width: 100%;
+        text-align: center;
+      }
 
-    .press__title {
-      font-family: var(--display);
-      font-weight: 500;
-      font-size: clamp(1.15rem, 2.6vh, 1.5rem);
-      color: var(--cream);
-      margin: 0 0 clamp(0.5rem, 1.4vh, 1rem);
-    }
+      .press__title {
+        font-family: var(--display);
+        font-weight: 500;
+        font-size: clamp(1.15rem, 2.6vh, 1.5rem);
+        color: var(--cream);
+        margin: 0 0 clamp(0.5rem, 1.4vh, 1rem);
+      }
 
-    /* Five per row in manifest order: two rows of flowers, then the five
+      /* Five per row in manifest order: two rows of flowers, then the five
        foliage items together on the third. Generous column spacing so each
        one-line meaning sits comfortably without wrapping. */
-    .palette {
-      display: grid;
-      grid-template-columns: repeat(5, 1fr);
-      gap: clamp(1rem, 2.5vh, 1.8rem) clamp(1.25rem, 4vw, 3rem);
-    }
+      .palette {
+        display: grid;
+        grid-template-columns: repeat(5, 1fr);
+        gap: clamp(1rem, 2.5vh, 1.8rem) clamp(1.25rem, 4vw, 3rem);
+      }
 
-    .bloom { text-align: center; min-width: 0; position: relative; }
+      .bloom {
+        text-align: center;
+        min-width: 0;
+        position: relative;
+      }
 
-    /* warm halo behind the selected flower (tap-to-place selection) */
-    .bloom::before {
-      content: "";
-      position: absolute;
-      top: 0;
-      left: 50%;
-      width: 100%;
-      aspect-ratio: 1 / 1;
-      transform: translateX(-50%) scale(0.9);
-      border-radius: 50%;
-      background: radial-gradient(circle at 50% 50%,
-        rgba(214, 180, 110, 0.55) 0%,
-        rgba(200, 166, 98, 0.28) 38%,
-        rgba(200, 166, 98, 0) 70%);
-      opacity: 0;
-      transition: opacity 0.3s ease, transform 0.3s ease;
-      pointer-events: none;
-      z-index: 0;
-    }
-    .bloom--selected::before { opacity: 1; transform: translateX(-50%) scale(1.05); }
+      /* warm halo behind the selected flower (tap-to-place selection) */
+      .bloom::before {
+        content: "";
+        position: absolute;
+        top: 0;
+        left: 50%;
+        width: 100%;
+        aspect-ratio: 1 / 1;
+        transform: translateX(-50%) scale(0.9);
+        border-radius: 50%;
+        background: radial-gradient(
+          circle at 50% 50%,
+          rgba(214, 180, 110, 0.55) 0%,
+          rgba(200, 166, 98, 0.28) 38%,
+          rgba(200, 166, 98, 0) 70%
+        );
+        opacity: 0;
+        transition:
+          opacity 0.3s ease,
+          transform 0.3s ease;
+        pointer-events: none;
+        z-index: 0;
+      }
+      .bloom--selected::before {
+        opacity: 1;
+        transform: translateX(-50%) scale(1.05);
+      }
 
-    .bloom__img {
-      position: relative;
-      z-index: 1;
-      width: 100%;
-      max-width: clamp(168px, 28vh, 300px);
-      aspect-ratio: 1 / 1;
-      object-fit: contain;
-      display: block;
-      margin: 0 auto 0.25rem;
-      filter: drop-shadow(0 5px 12px rgba(0, 0, 0, 0.45));
-      transition: transform 0.25s ease;
-      cursor: grab;
-      -webkit-user-drag: none;
-      user-select: none;
-    }
-    .bloom__img:active { cursor: grabbing; }
-    .bloom figcaption { position: relative; z-index: 1; }
-    .bloom:hover .bloom__img { transform: translateY(-4px) scale(1.03); }
+      .bloom__img {
+        position: relative;
+        z-index: 1;
+        width: 100%;
+        max-width: clamp(168px, 28vh, 300px);
+        aspect-ratio: 1 / 1;
+        object-fit: contain;
+        display: block;
+        margin: 0 auto 0.25rem;
+        filter: drop-shadow(0 5px 12px rgba(0, 0, 0, 0.45));
+        transition: transform 0.25s ease;
+        cursor: grab;
+        -webkit-user-drag: none;
+        user-select: none;
+      }
+      .bloom__img:active {
+        cursor: grabbing;
+      }
+      .bloom figcaption {
+        position: relative;
+        z-index: 1;
+      }
+      .bloom:hover .bloom__img {
+        transform: translateY(-4px) scale(1.03);
+      }
 
-    .bloom__name {
-      font-family: var(--display);
-      font-size: 1.1rem;
-      color: var(--cream);
-      line-height: 1.1;
-      text-transform: capitalize;
-      white-space: nowrap;
-    }
-    .bloom__meaning {
-      display: block;
-      font-size: 0.8rem;
-      font-style: italic;
-      color: var(--dusk-sage);
-      line-height: 1.25;
-      margin-top: 0.1rem;
-      white-space: nowrap;
-    }
+      .bloom__name {
+        font-family: var(--display);
+        font-size: 1.1rem;
+        color: var(--cream);
+        line-height: 1.1;
+        text-transform: capitalize;
+        white-space: nowrap;
+      }
+      .bloom__meaning {
+        display: block;
+        font-size: 0.8rem;
+        font-style: italic;
+        color: var(--dusk-sage);
+        line-height: 1.25;
+        margin-top: 0.1rem;
+        white-space: nowrap;
+      }
 
-    /* ---- Footer ---- */
-    .colophon {
-      text-align: center;
-      margin-top: clamp(0.75rem, 2vh, 1.75rem);
-      font-size: 0.78rem;
-      font-style: italic;
-      color: var(--moss-soft);
-    }
+      /* ---- Footer ---- */
+      .colophon {
+        text-align: center;
+        margin-top: clamp(0.75rem, 2vh, 1.75rem);
+        font-size: 0.78rem;
+        font-style: italic;
+        color: var(--moss-soft);
+      }
 
-    /* ---- Responsive: let it breathe and scroll on smaller screens ---- */
-    @media (max-width: 860px) {
-      .palette { grid-template-columns: repeat(3, 1fr); }
-      .bloom__img { max-width: clamp(120px, 24vh, 200px); }
-    }
-    @media (max-width: 480px) {
-      body { font-size: 17px; }
-      .palette { grid-template-columns: repeat(2, 1fr); }
-      .bloom__meaning { font-size: 0.72rem; white-space: normal; }
-    }
+      /* ---- Responsive: let it breathe and scroll on smaller screens ---- */
+      @media (max-width: 860px) {
+        .palette {
+          grid-template-columns: repeat(3, 1fr);
+        }
+        .bloom__img {
+          max-width: clamp(120px, 24vh, 200px);
+        }
+      }
+      @media (max-width: 480px) {
+        body {
+          font-size: 17px;
+        }
+        .palette {
+          grid-template-columns: repeat(2, 1fr);
+        }
+        .bloom__meaning {
+          font-size: 0.72rem;
+          white-space: normal;
+        }
+      }
 
-    @media (prefers-reduced-motion: reduce) {
-      * { transition: none !important; }
-    }
-  </style>
-</head>
-<body>
-  <main class="page">
-    <header class="masthead">
-      <h1>The Solstice Crown</h1>
-      <hr class="rule" />
-    </header>
+      @media (prefers-reduced-motion: reduce) {
+        * {
+          transition: none !important;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <main class="page">
+      <header class="masthead">
+        <h1>Build Your Own Summer Solstice Crown</h1>
+        <hr class="rule" />
+      </header>
 
-    <div class="studio">
-      <!-- Crown stage: the hero, with the wreath selector stacked to its right -->
-      <section class="stage-wrap" aria-label="Your flower crown">
-        <div class="stage-row">
-          <div class="stage" id="stage">
-            <img class="stage__backdrop" id="backdrop" alt="" />
-            <img class="stage__wreath" id="wreath" alt="Greenery wreath base" />
-            <div class="hooks" id="hooks" aria-hidden="true"></div>
-            <div class="placed-layer" id="placed-layer"></div>
+      <div class="studio">
+        <!-- Crown stage: the hero, with the wreath selector stacked to its right -->
+        <section class="stage-wrap" aria-label="Your flower crown">
+          <div class="stage-row">
+            <div class="stage" id="stage">
+              <img class="stage__backdrop" id="backdrop" alt="" />
+              <img
+                class="stage__wreath"
+                id="wreath"
+                alt="Greenery wreath base"
+              />
+              <div class="hooks" id="hooks" aria-hidden="true"></div>
+              <div class="placed-layer" id="placed-layer"></div>
+            </div>
+            <div class="right-rail">
+              <div
+                class="wreath-choices"
+                id="wreath-choices"
+                role="group"
+                aria-label="Greenery base"
+              ></div>
+              <button
+                type="button"
+                class="save-btn"
+                id="save-btn"
+                aria-label="Save your crown"
+                title="Save your crown"
+              >
+                <svg
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  stroke-width="1.3"
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  aria-hidden="true"
+                >
+                  <path
+                    d="M6 4 H16 L20 8 V18.5 A1.5 1.5 0 0 1 18.5 20 H5.5 A1.5 1.5 0 0 1 4 18.5 V6 A2 2 0 0 1 6 4 Z"
+                  />
+                  <path d="M9 4 V8 H15 V4" />
+                  <rect x="8" y="13" width="8" height="5" rx="0.5" />
+                </svg>
+              </button>
+            </div>
           </div>
-          <div class="right-rail">
-            <div class="wreath-choices" id="wreath-choices" role="group" aria-label="Greenery base"></div>
-            <button type="button" class="save-btn" id="save-btn" aria-label="Save your crown" title="Save your crown">
-              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.3"
-                   stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-                <path d="M6 4 H16 L20 8 V18.5 A1.5 1.5 0 0 1 18.5 20 H5.5 A1.5 1.5 0 0 1 4 18.5 V6 A2 2 0 0 1 6 4 Z" />
-                <path d="M9 4 V8 H15 V4" />
-                <rect x="8" y="13" width="8" height="5" rx="0.5" />
-              </svg>
-            </button>
-          </div>
-        </div>
-        <p class="stage__caption" id="stage-hint">Tap or drag a flower onto the ring to begin.</p>
-        <button type="button" class="crown-clear" id="crown-clear" hidden>Clear crown</button>
-      </section>
+          <p class="stage__caption" id="stage-hint">
+            Tap or drag a flower onto the ring to begin.
+          </p>
+          <button type="button" class="crown-clear" id="crown-clear" hidden>
+            Clear crown
+          </button>
+        </section>
 
-      <!-- The flower press -->
-      <section class="press" aria-label="Flowers">
-        <div class="palette" id="palette"></div>
-      </section>
-    </div>
-
-    <div class="preview" id="preview" hidden>
-      <div class="preview__dialog" role="dialog" aria-modal="true" aria-labelledby="preview-title">
-        <button type="button" class="preview__close" id="preview-close" aria-label="Close preview">&times;</button>
-        <h2 class="preview__title" id="preview-title">Your crown</h2>
-        <div class="preview__stage" id="preview-stage">
-          <div class="preview__checker" id="preview-checker" hidden></div>
-          <img class="preview__bg" id="preview-bg" alt="" hidden />
-          <img class="preview__wreath" id="preview-wreath" alt="" />
-          <div class="preview__placed" id="preview-placed"></div>
-        </div>
-        <div class="preview__backdrops" id="preview-backdrops" role="group" aria-label="Backdrop"></div>
-        <button type="button" class="preview__download" id="preview-download">Download</button>
+        <!-- The flower press -->
+        <section class="press" aria-label="Flowers">
+          <div class="palette" id="palette"></div>
+        </section>
       </div>
-    </div>
 
-    <div class="scroll-cue" id="scroll-cue" aria-hidden="true">
-      <span class="scroll-cue__label">more blooms below</span>
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"
-           stroke-linecap="round" stroke-linejoin="round">
-        <path d="M5 9l7 7 7-7" />
-      </svg>
-    </div>
-  </main>
+      <div class="preview" id="preview" hidden>
+        <div
+          class="preview__dialog"
+          role="dialog"
+          aria-modal="true"
+          aria-labelledby="preview-title"
+        >
+          <button
+            type="button"
+            class="preview__close"
+            id="preview-close"
+            aria-label="Close preview"
+          >
+            &times;
+          </button>
+          <h2 class="preview__title" id="preview-title">Your crown</h2>
+          <div class="preview__stage" id="preview-stage">
+            <div class="preview__checker" id="preview-checker" hidden></div>
+            <img class="preview__bg" id="preview-bg" alt="" hidden />
+            <img class="preview__wreath" id="preview-wreath" alt="" />
+            <div class="preview__placed" id="preview-placed"></div>
+          </div>
+          <div
+            class="preview__backdrops"
+            id="preview-backdrops"
+            role="group"
+            aria-label="Backdrop"
+          ></div>
+          <button type="button" class="preview__download" id="preview-download">
+            Download
+          </button>
+        </div>
+      </div>
 
-  <script>
-    // ---- Flower manifest ----------------------------------------------------
-    // Each entry: { file, name, meaning }. Add to this array to extend the press.
-    const FLOWERS = [
-      { file: "rose.png",         name: "rose",         meaning: "love, desire, devotion" },
-      { file: "sunflower.png",    name: "sunflower",    meaning: "adoration, loyalty, warmth" },
-      { file: "chrysanthemum.png",name: "chrysanthemum",meaning: "joy, longevity, truth" },
-      { file: "lavender.png",     name: "lavender",     meaning: "serenity, devotion, calm" },
-      { file: "carnation.png",    name: "carnation",    meaning: "devotion, love, fascination" },
-      { file: "sweetpea.png",     name: "sweet pea",    meaning: "pleasure, gratitude, bliss" },
-      { file: "foxglove.png",     name: "foxglove",     meaning: "magic, mystery, fae" },
-      { file: "chamomile.png",    name: "chamomile",    meaning: "patience, calm, rest" },
-      { file: "bluebell.png",     name: "bluebell",     meaning: "constancy, gratitude, enchantment" },
-      { file: "honeysuckle.png",  name: "honeysuckle",  meaning: "devotion, affection, sweetness" },
-      { file: "eucalyptus.png",   name: "eucalyptus",   meaning: "protection, clarity, healing" },
-      { file: "fern.png",         name: "fern",         meaning: "sincerity, magic, shelter" },
-      { file: "ivy.png",          name: "ivy",          meaning: "fidelity, friendship, constancy" },
-      { file: "rosemary.png",     name: "rosemary",     meaning: "remembrance, loyalty, clarity" },
-      { file: "myrtle.png",       name: "myrtle",       meaning: "love, union, fidelity" },
-    ];
+      <div class="scroll-cue" id="scroll-cue" aria-hidden="true">
+        <span class="scroll-cue__label">more blooms below</span>
+        <svg
+          viewBox="0 0 24 24"
+          fill="none"
+          stroke="currentColor"
+          stroke-width="1.5"
+          stroke-linecap="round"
+          stroke-linejoin="round"
+        >
+          <path d="M5 9l7 7 7-7" />
+        </svg>
+      </div>
+    </main>
 
-    // ---- Backdrops and wreaths ----------------------------------------------
-    const BACKDROPS = [
-      { id: "transparent", label: "Transparent", src: null },
-      { id: "bark",        label: "Bark",        src: "backgrounds/bark.jpg" },
-      { id: "moss",        label: "Moss",        src: "backgrounds/moss.jpg" },
-    ];
+    <script>
+      // ---- Flower manifest ----------------------------------------------------
+      // Each entry: { file, name, meaning }. Add to this array to extend the press.
+      const FLOWERS = [
+        { file: "rose.png", name: "rose", meaning: "love, desire, devotion" },
+        {
+          file: "sunflower.png",
+          name: "sunflower",
+          meaning: "adoration, loyalty, warmth",
+        },
+        {
+          file: "chrysanthemum.png",
+          name: "chrysanthemum",
+          meaning: "joy, longevity, truth",
+        },
+        {
+          file: "lavender.png",
+          name: "lavender",
+          meaning: "serenity, devotion, calm",
+        },
+        {
+          file: "carnation.png",
+          name: "carnation",
+          meaning: "devotion, love, fascination",
+        },
+        {
+          file: "sweetpea.png",
+          name: "sweet pea",
+          meaning: "pleasure, gratitude, bliss",
+        },
+        {
+          file: "foxglove.png",
+          name: "foxglove",
+          meaning: "magic, mystery, fae",
+        },
+        {
+          file: "chamomile.png",
+          name: "chamomile",
+          meaning: "patience, calm, rest",
+        },
+        {
+          file: "bluebell.png",
+          name: "bluebell",
+          meaning: "constancy, gratitude, enchantment",
+        },
+        {
+          file: "honeysuckle.png",
+          name: "honeysuckle",
+          meaning: "devotion, affection, sweetness",
+        },
+        {
+          file: "eucalyptus.png",
+          name: "eucalyptus",
+          meaning: "protection, clarity, healing",
+        },
+        {
+          file: "fern.png",
+          name: "fern",
+          meaning: "sincerity, magic, shelter",
+        },
+        {
+          file: "ivy.png",
+          name: "ivy",
+          meaning: "fidelity, friendship, constancy",
+        },
+        {
+          file: "rosemary.png",
+          name: "rosemary",
+          meaning: "remembrance, loyalty, clarity",
+        },
+        {
+          file: "myrtle.png",
+          name: "myrtle",
+          meaning: "love, union, fidelity",
+        },
+      ];
 
-    const WREATHS = [
-      { id: "wreath-1", src: "wreaths/wreath-1.png" },
-      { id: "wreath-2", src: "wreaths/wreath-2.png" },
-      { id: "wreath-3", src: "wreaths/wreath-3.png" },
-    ];
+      // ---- Backdrops and wreaths ----------------------------------------------
+      const BACKDROPS = [
+        { id: "transparent", label: "Transparent", src: null },
+        { id: "bark", label: "Bark", src: "backgrounds/bark.jpg" },
+        { id: "moss", label: "Moss", src: "backgrounds/moss.jpg" },
+      ];
 
-    // ---- State --------------------------------------------------------------
-    // The creation stage is plain for now: no backdrop image, just the page
-    // behind the wreath. Backdrop choice (moss/bark/transparent) is kept in the
-    // code and will be reintroduced later, only at the save step.
-    const state = {
-      backdrop: "transparent",
-      wreath: WREATHS[0].id,
-    };
+      const WREATHS = [
+        { id: "wreath-1", src: "wreaths/wreath-1.png" },
+        { id: "wreath-2", src: "wreaths/wreath-2.png" },
+        { id: "wreath-3", src: "wreaths/wreath-3.png" },
+      ];
 
-    const backdropImg = document.getElementById("backdrop");
-    const wreathImg = document.getElementById("wreath");
+      // ---- State --------------------------------------------------------------
+      // The creation stage is plain for now: no backdrop image, just the page
+      // behind the wreath. Backdrop choice (moss/bark/transparent) is kept in the
+      // code and will be reintroduced later, only at the save step.
+      const state = {
+        backdrop: "transparent",
+        wreath: WREATHS[0].id,
+      };
 
-    function applyBackdrop() {
-      const choice = BACKDROPS.find((b) => b.id === state.backdrop);
-      if (!choice || !choice.src) {
-        backdropImg.removeAttribute("src");
-        backdropImg.hidden = true;
-        backdropImg.alt = "";
-      } else {
-        backdropImg.hidden = false;
-        backdropImg.src = choice.src;
-        backdropImg.alt = choice.label + " backdrop";
-      }
-      syncPressed("backdrop-choices", state.backdrop);
-    }
+      const backdropImg = document.getElementById("backdrop");
+      const wreathImg = document.getElementById("wreath");
 
-    function applyWreath() {
-      const choice = WREATHS.find((w) => w.id === state.wreath);
-      if (choice) wreathImg.src = choice.src;
-      syncPressed("wreath-choices", state.wreath);
-    }
-
-    function syncPressed(containerId, activeId) {
-      const container = document.getElementById(containerId);
-      if (!container) return;
-      container.querySelectorAll("[data-id]").forEach((el) => {
-        el.setAttribute("aria-pressed", String(el.dataset.id === activeId));
-      });
-    }
-
-    // ---- Build the controls -------------------------------------------------
-    function buildBackdropChoices() {
-      const container = document.getElementById("backdrop-choices");
-      BACKDROPS.forEach((b, i) => {
-        if (i > 0) {
-          const sep = document.createElement("span");
-          sep.className = "toggle__sep";
-          sep.setAttribute("aria-hidden", "true");
-          sep.textContent = "/";
-          container.appendChild(sep);
-        }
-        const btn = document.createElement("button");
-        btn.type = "button";
-        btn.className = "toggle";
-        btn.dataset.id = b.id;
-        btn.textContent = b.label;
-        btn.setAttribute("aria-pressed", String(b.id === state.backdrop));
-        btn.addEventListener("click", () => {
-          state.backdrop = b.id;
-          applyBackdrop();
-        });
-        container.appendChild(btn);
-      });
-    }
-
-    function buildWreathChoices() {
-      const container = document.getElementById("wreath-choices");
-      WREATHS.forEach((w, i) => {
-        const btn = document.createElement("button");
-        btn.type = "button";
-        btn.className = "wreath-choice";
-        btn.dataset.id = w.id;
-        btn.setAttribute("aria-pressed", String(w.id === state.wreath));
-        btn.setAttribute("aria-label", "Greenery base " + (i + 1));
-
-        const img = document.createElement("img");
-        img.src = w.src;
-        img.alt = "";
-        btn.appendChild(img);
-
-        btn.addEventListener("click", () => {
-          state.wreath = w.id;
-          applyWreath();
-        });
-        container.appendChild(btn);
-      });
-    }
-
-    function buildPalette() {
-      const palette = document.getElementById("palette");
-      FLOWERS.forEach((f) => {
-        const card = document.createElement("figure");
-        card.className = "bloom";
-        card.dataset.flower = f.file;
-
-        const img = document.createElement("img");
-        img.className = "bloom__img";
-        img.src = "flowers/" + f.file;
-        img.alt = f.name;
-        img.loading = "lazy";
-        img.draggable = false;
-        img.addEventListener("pointerdown", (ev) => onPaletteDown(f.file, ev));
-
-        const caption = document.createElement("figcaption");
-        const name = document.createElement("span");
-        name.className = "bloom__name";
-        name.textContent = f.name;
-        const meaning = document.createElement("span");
-        meaning.className = "bloom__meaning";
-        meaning.textContent = f.meaning;
-
-        caption.appendChild(name);
-        caption.appendChild(meaning);
-        card.appendChild(img);
-        card.appendChild(caption);
-        palette.appendChild(card);
-      });
-    }
-
-    // ---- Weaving the crown --------------------------------------------------
-    // Geometry constants, kept easy to tune per wreath art.
-    const HOOK_COUNT = 24;        // evenly spaced anchor points
-    const RING_RADIUS_PCT = 42;   // hook circle radius, % of stage width from centre
-
-    // These mirror the CSS variables and are reused by the canvas export so the
-    // saved PNG matches the screen exactly. Keep in sync with :root.
-    const PLACED_SIZE_RATIO = 0.26;   // --placed-size: 26%
-    const BLOOM_BOTTOM_INSET = 0.44;  // --bloom-bottom-inset: 44% (bloom keeps top 56%)
-    const STEM_TOP_INSET = 0.50;      // --stem-top-inset: 50% (stem keeps bottom 50%)
-
-    const stageEl = document.getElementById("stage");
-    const hooksLayer = document.getElementById("hooks");
-    const placedLayer = document.getElementById("placed-layer");
-    const hintEl = document.getElementById("stage-hint");
-    const clearBtn = document.getElementById("crown-clear");
-
-    // The 6 o'clock hook is split into two halves to bridge the spiral seam.
-    // With 24 hooks from the top clockwise, hook 12 is 6:00, 13 is 6:30, 11 is 5:30.
-    const SPLIT_HOOK = HOOK_COUNT / 2; // 12 = bottom centre
-
-    // HOOKS holds the geometry; placements[i] is an array of placed elements
-    // (one per normal hook, two for the split hook) or null.
-    const HOOKS = [];
-    const hookEls = [];
-    const placements = new Array(HOOK_COUNT).fill(null);
-
-    function buildHooks() {
-      const r = RING_RADIUS_PCT / 100;
-      for (let i = 0; i < HOOK_COUNT; i++) {
-        const angleDeg = i * (360 / HOOK_COUNT);
-        const a = (angleDeg * Math.PI) / 180;
-        // angle measured from the top, going clockwise
-        const xFrac = 0.5 + r * Math.sin(a);
-        const yFrac = 0.5 - r * Math.cos(a);
-        HOOKS.push({ index: i, angleDeg, xFrac, yFrac });
-
-        const dot = document.createElement("div");
-        dot.className = "hook";
-        dot.dataset.hook = i;
-        dot.style.left = (xFrac * 100) + "%";
-        dot.style.top = (yFrac * 100) + "%";
-        hooksLayer.appendChild(dot);
-        hookEls[i] = dot;
-      }
-    }
-
-    // Spiral z-order: highest at 6:30 (hook 13), stepping down clockwise to the
-    // lowest at 5:30 (hook 11). The 6:00 flower's two halves sit outside this
-    // range entirely (bloom on top of all, stem beneath all) to bridge the seam.
-    function zForHook(index) {
-      const k = (index - (SPLIT_HOOK + 1) + HOOK_COUNT) % HOOK_COUNT; // 0 at 6:30
-      return 100 - 2 * k;
-    }
-
-    // Build a placed element for a hook, positioned and rotated tangent to the
-    // ring. halfClass ("" | "placed--bloom" | "placed--stem") clips the split flower.
-    function makePlaced(h, index, halfClass, z) {
-      const el = document.createElement("div");
-      el.className = "placed" + (halfClass ? " " + halfClass : "");
-      el.dataset.hook = index;
-      el.style.left = (h.xFrac * 100) + "%";
-      el.style.top = (h.yFrac * 100) + "%";
-      // Lie tangent to the ring: +90 from radial-outward so the bloom head
-      // leads clockwise and the stem trails behind it.
-      el.style.setProperty("--rot", (h.angleDeg + 90) + "deg");
-      el.style.zIndex = z;
-      el.addEventListener("pointerdown", (ev) => onPlacedDown(index, ev));
-      const img = document.createElement("img");
-      img.alt = "";
-      el.appendChild(img);
-      return el;
-    }
-
-    // Place (or replace) a flower on a hook. Every flower is a single element
-    // except the 6:00 bridge flower, which is two halves slotted into the seam.
-    function placeFlower(index, file) {
-      const h = HOOKS[index];
-      let els = placements[index];
-      if (!els) {
-        if (index === SPLIT_HOOK) {
-          // The 6:00 flower bridges the seam at the extremes of the stack:
-          // its bloom half sits on top of everything, its stem half under everything.
-          const stem = makePlaced(h, index, "placed--stem", 0);
-          const bloom = makePlaced(h, index, "placed--bloom", 999);
-          placedLayer.append(stem, bloom);
-          els = [stem, bloom];
+      function applyBackdrop() {
+        const choice = BACKDROPS.find((b) => b.id === state.backdrop);
+        if (!choice || !choice.src) {
+          backdropImg.removeAttribute("src");
+          backdropImg.hidden = true;
+          backdropImg.alt = "";
         } else {
-          const el = makePlaced(h, index, "", zForHook(index));
-          placedLayer.appendChild(el);
-          els = [el];
+          backdropImg.hidden = false;
+          backdropImg.src = choice.src;
+          backdropImg.alt = choice.label + " backdrop";
         }
-        placements[index] = els;
+        syncPressed("backdrop-choices", state.backdrop);
       }
-      els.forEach((el) => {
-        el.dataset.file = file;
-        el.querySelector("img").src = "flowers/" + file;
-      });
-      refreshCrownUI();
-    }
 
-    function clearCrown() {
-      placements.forEach((els) => {
-        if (els) els.forEach((el) => el.remove());
-      });
-      placements.fill(null);
-      refreshCrownUI();
-    }
+      function applyWreath() {
+        const choice = WREATHS.find((w) => w.id === state.wreath);
+        if (choice) wreathImg.src = choice.src;
+        syncPressed("wreath-choices", state.wreath);
+      }
 
-    function refreshCrownUI() {
-      const count = placements.filter(Boolean).length;
-      hintEl.hidden = count > 0;
-      clearBtn.hidden = count === 0;
-    }
+      function syncPressed(containerId, activeId) {
+        const container = document.getElementById(containerId);
+        if (!container) return;
+        container.querySelectorAll("[data-id]").forEach((el) => {
+          el.setAttribute("aria-pressed", String(el.dataset.id === activeId));
+        });
+      }
 
-    // Remove a placement entirely (both halves, for the split hook).
-    function removePlacement(index) {
-      const els = placements[index];
-      if (els) {
-        els.forEach((el) => el.remove());
-        placements[index] = null;
+      // ---- Build the controls -------------------------------------------------
+      function buildBackdropChoices() {
+        const container = document.getElementById("backdrop-choices");
+        BACKDROPS.forEach((b, i) => {
+          if (i > 0) {
+            const sep = document.createElement("span");
+            sep.className = "toggle__sep";
+            sep.setAttribute("aria-hidden", "true");
+            sep.textContent = "/";
+            container.appendChild(sep);
+          }
+          const btn = document.createElement("button");
+          btn.type = "button";
+          btn.className = "toggle";
+          btn.dataset.id = b.id;
+          btn.textContent = b.label;
+          btn.setAttribute("aria-pressed", String(b.id === state.backdrop));
+          btn.addEventListener("click", () => {
+            state.backdrop = b.id;
+            applyBackdrop();
+          });
+          container.appendChild(btn);
+        });
+      }
+
+      function buildWreathChoices() {
+        const container = document.getElementById("wreath-choices");
+        WREATHS.forEach((w, i) => {
+          const btn = document.createElement("button");
+          btn.type = "button";
+          btn.className = "wreath-choice";
+          btn.dataset.id = w.id;
+          btn.setAttribute("aria-pressed", String(w.id === state.wreath));
+          btn.setAttribute("aria-label", "Greenery base " + (i + 1));
+
+          const img = document.createElement("img");
+          img.src = w.src;
+          img.alt = "";
+          btn.appendChild(img);
+
+          btn.addEventListener("click", () => {
+            state.wreath = w.id;
+            applyWreath();
+          });
+          container.appendChild(btn);
+        });
+      }
+
+      function buildPalette() {
+        const palette = document.getElementById("palette");
+        FLOWERS.forEach((f) => {
+          const card = document.createElement("figure");
+          card.className = "bloom";
+          card.dataset.flower = f.file;
+
+          const img = document.createElement("img");
+          img.className = "bloom__img";
+          img.src = "flowers/" + f.file;
+          img.alt = f.name;
+          img.loading = "lazy";
+          img.draggable = false;
+          img.addEventListener("pointerdown", (ev) =>
+            onPaletteDown(f.file, ev),
+          );
+
+          const caption = document.createElement("figcaption");
+          const name = document.createElement("span");
+          name.className = "bloom__name";
+          name.textContent = f.name;
+          const meaning = document.createElement("span");
+          meaning.className = "bloom__meaning";
+          meaning.textContent = f.meaning;
+
+          caption.appendChild(name);
+          caption.appendChild(meaning);
+          card.appendChild(img);
+          card.appendChild(caption);
+          palette.appendChild(card);
+        });
+      }
+
+      // ---- Weaving the crown --------------------------------------------------
+      // Geometry constants, kept easy to tune per wreath art.
+      const HOOK_COUNT = 24; // evenly spaced anchor points
+      const RING_RADIUS_PCT = 42; // hook circle radius, % of stage width from centre
+
+      // These mirror the CSS variables and are reused by the canvas export so the
+      // saved PNG matches the screen exactly. Keep in sync with :root.
+      const PLACED_SIZE_RATIO = 0.26; // --placed-size: 26%
+      const BLOOM_BOTTOM_INSET = 0.44; // --bloom-bottom-inset: 44% (bloom keeps top 56%)
+      const STEM_TOP_INSET = 0.5; // --stem-top-inset: 50% (stem keeps bottom 50%)
+
+      const stageEl = document.getElementById("stage");
+      const hooksLayer = document.getElementById("hooks");
+      const placedLayer = document.getElementById("placed-layer");
+      const hintEl = document.getElementById("stage-hint");
+      const clearBtn = document.getElementById("crown-clear");
+
+      // The 6 o'clock hook is split into two halves to bridge the spiral seam.
+      // With 24 hooks from the top clockwise, hook 12 is 6:00, 13 is 6:30, 11 is 5:30.
+      const SPLIT_HOOK = HOOK_COUNT / 2; // 12 = bottom centre
+
+      // HOOKS holds the geometry; placements[i] is an array of placed elements
+      // (one per normal hook, two for the split hook) or null.
+      const HOOKS = [];
+      const hookEls = [];
+      const placements = new Array(HOOK_COUNT).fill(null);
+
+      function buildHooks() {
+        const r = RING_RADIUS_PCT / 100;
+        for (let i = 0; i < HOOK_COUNT; i++) {
+          const angleDeg = i * (360 / HOOK_COUNT);
+          const a = (angleDeg * Math.PI) / 180;
+          // angle measured from the top, going clockwise
+          const xFrac = 0.5 + r * Math.sin(a);
+          const yFrac = 0.5 - r * Math.cos(a);
+          HOOKS.push({ index: i, angleDeg, xFrac, yFrac });
+
+          const dot = document.createElement("div");
+          dot.className = "hook";
+          dot.dataset.hook = i;
+          dot.style.left = xFrac * 100 + "%";
+          dot.style.top = yFrac * 100 + "%";
+          hooksLayer.appendChild(dot);
+          hookEls[i] = dot;
+        }
+      }
+
+      // Spiral z-order: highest at 6:30 (hook 13), stepping down clockwise to the
+      // lowest at 5:30 (hook 11). The 6:00 flower's two halves sit outside this
+      // range entirely (bloom on top of all, stem beneath all) to bridge the seam.
+      function zForHook(index) {
+        const k = (index - (SPLIT_HOOK + 1) + HOOK_COUNT) % HOOK_COUNT; // 0 at 6:30
+        return 100 - 2 * k;
+      }
+
+      // Build a placed element for a hook, positioned and rotated tangent to the
+      // ring. halfClass ("" | "placed--bloom" | "placed--stem") clips the split flower.
+      function makePlaced(h, index, halfClass, z) {
+        const el = document.createElement("div");
+        el.className = "placed" + (halfClass ? " " + halfClass : "");
+        el.dataset.hook = index;
+        el.style.left = h.xFrac * 100 + "%";
+        el.style.top = h.yFrac * 100 + "%";
+        // Lie tangent to the ring: +90 from radial-outward so the bloom head
+        // leads clockwise and the stem trails behind it.
+        el.style.setProperty("--rot", h.angleDeg + 90 + "deg");
+        el.style.zIndex = z;
+        el.addEventListener("pointerdown", (ev) => onPlacedDown(index, ev));
+        const img = document.createElement("img");
+        img.alt = "";
+        el.appendChild(img);
+        return el;
+      }
+
+      // Place (or replace) a flower on a hook. Every flower is a single element
+      // except the 6:00 bridge flower, which is two halves slotted into the seam.
+      function placeFlower(index, file) {
+        const h = HOOKS[index];
+        let els = placements[index];
+        if (!els) {
+          if (index === SPLIT_HOOK) {
+            // The 6:00 flower bridges the seam at the extremes of the stack:
+            // its bloom half sits on top of everything, its stem half under everything.
+            const stem = makePlaced(h, index, "placed--stem", 0);
+            const bloom = makePlaced(h, index, "placed--bloom", 999);
+            placedLayer.append(stem, bloom);
+            els = [stem, bloom];
+          } else {
+            const el = makePlaced(h, index, "", zForHook(index));
+            placedLayer.appendChild(el);
+            els = [el];
+          }
+          placements[index] = els;
+        }
+        els.forEach((el) => {
+          el.dataset.file = file;
+          el.querySelector("img").src = "flowers/" + file;
+        });
         refreshCrownUI();
       }
-    }
-    // Temporarily hide a placement while its flower is being dragged, so it can
-    // be restored cheaply if the drag is cancelled.
-    function setPlacementHidden(index, hidden) {
-      const els = placements[index];
-      if (els) els.forEach((el) => { el.style.display = hidden ? "none" : ""; });
-    }
 
-    // ---- Placing, moving and removing flowers -------------------------------
-    // A press is "pending" until we know its intent: enough movement starts a
-    // drag; a press with no movement is a tap. The same pointer drag serves a
-    // palette flower (new placement) and a placed flower (move/remove).
-    //   pending.kind: "palette" | "placed"
-    let drag = null;
-    let activeHook = null;
-    let pending = null;
-    let selectedFlower = null;
-    const MOVE_THRESHOLD = 6; // px before a press counts as a drag
-
-    function startPending(p) {
-      pending = Object.assign({ started: false }, p);
-      window.addEventListener("pointermove", onPendingMove);
-      window.addEventListener("pointerup", onPendingUp);
-      window.addEventListener("pointercancel", onPendingCancel);
-    }
-
-    // Press on a palette flower: drag to place, or tap to select.
-    function onPaletteDown(file, ev) {
-      if (ev.button != null && ev.button > 0) return; // primary button / touch only
-      if (ev.pointerType !== "touch") ev.preventDefault(); // avoid native image drag/select
-      startPending({ kind: "palette", file, x: ev.clientX, y: ev.clientY, type: ev.pointerType });
-    }
-
-    // Press on a placed flower: drag to move/remove. A plain tap does nothing.
-    // If a palette flower is selected we leave it alone, so the tap places that.
-    function onPlacedDown(index, ev) {
-      if (ev.button != null && ev.button > 0) return;
-      if (selectedFlower) return; // selection mode: let tap-to-place handle the ring
-      const els = placements[index];
-      if (!els) return;
-      ev.preventDefault();
-      startPending({ kind: "placed", file: els[0].dataset.file, sourceHook: index,
-        x: ev.clientX, y: ev.clientY, type: ev.pointerType });
-    }
-
-    function onPendingMove(ev) {
-      if (!pending) return;
-      if (!pending.started) {
-        const dist = Math.hypot(ev.clientX - pending.x, ev.clientY - pending.y);
-        if (dist < MOVE_THRESHOLD) return;
-        // A palette drag on touch is really a scroll - hand it back to the browser.
-        // (Placed flowers use touch-action:none, so they drag on touch.)
-        if (pending.kind === "palette" && pending.type === "touch") { clearPending(); return; }
-        beginDrag(pending);
-        pending.started = true;
+      function clearCrown() {
+        placements.forEach((els) => {
+          if (els) els.forEach((el) => el.remove());
+        });
+        placements.fill(null);
+        refreshCrownUI();
       }
-      onDragMove(ev);
-    }
 
-    function onPendingUp(ev) {
-      if (!pending) return;
-      const wasDrag = pending.started;
-      const kind = pending.kind;
-      const file = pending.file;
-      clearPending();
-      if (wasDrag) onDragEnd(ev);
-      else if (kind === "palette") selectFlower(file); // tap a palette flower = select
-      // a tap on a placed flower (no drag) does nothing
-    }
+      function refreshCrownUI() {
+        const count = placements.filter(Boolean).length;
+        hintEl.hidden = count > 0;
+        clearBtn.hidden = count === 0;
+      }
 
-    function onPendingCancel() {
-      if (!pending) return;
-      if (pending.started) {
-        if (drag && drag.isMove) setPlacementHidden(drag.sourceHook, false); // restore
+      // Remove a placement entirely (both halves, for the split hook).
+      function removePlacement(index) {
+        const els = placements[index];
+        if (els) {
+          els.forEach((el) => el.remove());
+          placements[index] = null;
+          refreshCrownUI();
+        }
+      }
+      // Temporarily hide a placement while its flower is being dragged, so it can
+      // be restored cheaply if the drag is cancelled.
+      function setPlacementHidden(index, hidden) {
+        const els = placements[index];
+        if (els)
+          els.forEach((el) => {
+            el.style.display = hidden ? "none" : "";
+          });
+      }
+
+      // ---- Placing, moving and removing flowers -------------------------------
+      // A press is "pending" until we know its intent: enough movement starts a
+      // drag; a press with no movement is a tap. The same pointer drag serves a
+      // palette flower (new placement) and a placed flower (move/remove).
+      //   pending.kind: "palette" | "placed"
+      let drag = null;
+      let activeHook = null;
+      let pending = null;
+      let selectedFlower = null;
+      const MOVE_THRESHOLD = 6; // px before a press counts as a drag
+
+      function startPending(p) {
+        pending = Object.assign({ started: false }, p);
+        window.addEventListener("pointermove", onPendingMove);
+        window.addEventListener("pointerup", onPendingUp);
+        window.addEventListener("pointercancel", onPendingCancel);
+      }
+
+      // Press on a palette flower: drag to place, or tap to select.
+      function onPaletteDown(file, ev) {
+        if (ev.button != null && ev.button > 0) return; // primary button / touch only
+        if (ev.pointerType !== "touch") ev.preventDefault(); // avoid native image drag/select
+        startPending({
+          kind: "palette",
+          file,
+          x: ev.clientX,
+          y: ev.clientY,
+          type: ev.pointerType,
+        });
+      }
+
+      // Press on a placed flower: drag to move/remove. A plain tap does nothing.
+      // If a palette flower is selected we leave it alone, so the tap places that.
+      function onPlacedDown(index, ev) {
+        if (ev.button != null && ev.button > 0) return;
+        if (selectedFlower) return; // selection mode: let tap-to-place handle the ring
+        const els = placements[index];
+        if (!els) return;
+        ev.preventDefault();
+        startPending({
+          kind: "placed",
+          file: els[0].dataset.file,
+          sourceHook: index,
+          x: ev.clientX,
+          y: ev.clientY,
+          type: ev.pointerType,
+        });
+      }
+
+      function onPendingMove(ev) {
+        if (!pending) return;
+        if (!pending.started) {
+          const dist = Math.hypot(
+            ev.clientX - pending.x,
+            ev.clientY - pending.y,
+          );
+          if (dist < MOVE_THRESHOLD) return;
+          // A palette drag on touch is really a scroll - hand it back to the browser.
+          // (Placed flowers use touch-action:none, so they drag on touch.)
+          if (pending.kind === "palette" && pending.type === "touch") {
+            clearPending();
+            return;
+          }
+          beginDrag(pending);
+          pending.started = true;
+        }
+        onDragMove(ev);
+      }
+
+      function onPendingUp(ev) {
+        if (!pending) return;
+        const wasDrag = pending.started;
+        const kind = pending.kind;
+        const file = pending.file;
+        clearPending();
+        if (wasDrag) onDragEnd(ev);
+        else if (kind === "palette") selectFlower(file); // tap a palette flower = select
+        // a tap on a placed flower (no drag) does nothing
+      }
+
+      function onPendingCancel() {
+        if (!pending) return;
+        if (pending.started) {
+          if (drag && drag.isMove) setPlacementHidden(drag.sourceHook, false); // restore
+          endDrag();
+        }
+        clearPending();
+      }
+
+      function clearPending() {
+        pending = null;
+        window.removeEventListener("pointermove", onPendingMove);
+        window.removeEventListener("pointerup", onPendingUp);
+        window.removeEventListener("pointercancel", onPendingCancel);
+      }
+
+      function beginDrag(p) {
+        const isMove = p.kind === "placed";
+        if (isMove) setPlacementHidden(p.sourceHook, true); // lift it off the ring
+        const ghost = document.createElement("img");
+        ghost.className = "ghost";
+        ghost.src = "flowers/" + p.file;
+        ghost.style.width = stageEl.clientWidth * 0.26 + "px";
+        document.body.appendChild(ghost);
+        drag = { file: p.file, ghost, isMove, sourceHook: p.sourceHook };
+        moveGhost(p.x, p.y);
+      }
+
+      function moveGhost(x, y) {
+        if (!drag) return;
+        drag.ghost.style.left = x + "px";
+        drag.ghost.style.top = y + "px";
+      }
+
+      function onDragMove(ev) {
+        if (!drag) return;
+        moveGhost(ev.clientX, ev.clientY);
+        const hook = hookAtPointer(ev.clientX, ev.clientY);
+        setActiveHook(hook);
+        // When moving a placed flower, dim the ghost over the remove zone (off-ring).
+        if (drag.isMove)
+          drag.ghost.classList.toggle("ghost--remove", hook == null);
+      }
+
+      function onDragEnd(ev) {
+        if (!drag) return;
+        const hook = hookAtPointer(ev.clientX, ev.clientY);
+        // Moving: drop the old placement first, then re-place (or leave it removed
+        // if released off the ring). Placing from the palette: just place.
+        if (drag.isMove) removePlacement(drag.sourceHook);
+        if (hook != null) placeFlower(hook, drag.file);
         endDrag();
       }
-      clearPending();
-    }
 
-    function clearPending() {
-      pending = null;
-      window.removeEventListener("pointermove", onPendingMove);
-      window.removeEventListener("pointerup", onPendingUp);
-      window.removeEventListener("pointercancel", onPendingCancel);
-    }
-
-    function beginDrag(p) {
-      const isMove = p.kind === "placed";
-      if (isMove) setPlacementHidden(p.sourceHook, true); // lift it off the ring
-      const ghost = document.createElement("img");
-      ghost.className = "ghost";
-      ghost.src = "flowers/" + p.file;
-      ghost.style.width = stageEl.clientWidth * 0.26 + "px";
-      document.body.appendChild(ghost);
-      drag = { file: p.file, ghost, isMove, sourceHook: p.sourceHook };
-      moveGhost(p.x, p.y);
-    }
-
-    function moveGhost(x, y) {
-      if (!drag) return;
-      drag.ghost.style.left = x + "px";
-      drag.ghost.style.top = y + "px";
-    }
-
-    function onDragMove(ev) {
-      if (!drag) return;
-      moveGhost(ev.clientX, ev.clientY);
-      const hook = hookAtPointer(ev.clientX, ev.clientY);
-      setActiveHook(hook);
-      // When moving a placed flower, dim the ghost over the remove zone (off-ring).
-      if (drag.isMove) drag.ghost.classList.toggle("ghost--remove", hook == null);
-    }
-
-    function onDragEnd(ev) {
-      if (!drag) return;
-      const hook = hookAtPointer(ev.clientX, ev.clientY);
-      // Moving: drop the old placement first, then re-place (or leave it removed
-      // if released off the ring). Placing from the palette: just place.
-      if (drag.isMove) removePlacement(drag.sourceHook);
-      if (hook != null) placeFlower(hook, drag.file);
-      endDrag();
-    }
-
-    function endDrag() {
-      if (drag && drag.ghost) drag.ghost.remove();
-      drag = null;
-      setActiveHook(null);
-    }
-
-    // ---- Tap-to-place selection ---------------------------------------------
-    function selectFlower(file) {
-      selectedFlower = file;
-      document.querySelectorAll(".bloom").forEach((b) => {
-        b.classList.toggle("bloom--selected", b.dataset.flower === file);
-      });
-    }
-
-    function deselectFlower() {
-      if (!selectedFlower) return;
-      selectedFlower = null;
-      document.querySelectorAll(".bloom--selected").forEach((b) => b.classList.remove("bloom--selected"));
-      setActiveHook(null);
-    }
-
-    // Tap/click on the wreath places the selected flower at the nearest hook.
-    // Selection persists so several hooks can be filled in a row.
-    function onStageClick(ev) {
-      if (!selectedFlower) return;
-      const hook = hookAtPointer(ev.clientX, ev.clientY);
-      if (hook != null) placeFlower(hook, selectedFlower);
-    }
-
-    // Desktop: while a flower is selected, hovering the ring highlights the hook
-    // it would land on, just like dragging.
-    function onStageHover(ev) {
-      if (ev.pointerType === "touch" || drag || !selectedFlower) return;
-      setActiveHook(hookAtPointer(ev.clientX, ev.clientY));
-    }
-    function onStageLeave() {
-      if (!drag) setActiveHook(null);
-    }
-
-    // A click off any flower and away from the wreath clears the selection.
-    function onDocumentClick(ev) {
-      if (!selectedFlower) return;
-      if (ev.target.closest(".bloom") || ev.target.closest("#stage") || ev.target.closest(".preview")) return;
-      deselectFlower();
-    }
-
-    // Nearest hook to a screen point, or null when the pointer is away from the ring.
-    function hookAtPointer(cx, cy) {
-      const r = stageEl.getBoundingClientRect();
-      const margin = r.width * 0.15;
-      if (cx < r.left - margin || cx > r.right + margin ||
-          cy < r.top - margin || cy > r.bottom + margin) return null;
-      let best = null, bestD = Infinity;
-      for (const h of HOOKS) {
-        const hx = r.left + h.xFrac * r.width;
-        const hy = r.top + h.yFrac * r.height;
-        const d = (hx - cx) ** 2 + (hy - cy) ** 2;
-        if (d < bestD) { bestD = d; best = h.index; }
+      function endDrag() {
+        if (drag && drag.ghost) drag.ghost.remove();
+        drag = null;
+        setActiveHook(null);
       }
-      return best;
-    }
 
-    function setActiveHook(i) {
-      if (activeHook === i) return;
-      if (activeHook != null && hookEls[activeHook]) hookEls[activeHook].classList.remove("hook--active");
-      activeHook = i;
-      if (i != null && hookEls[i]) hookEls[i].classList.add("hook--active");
-    }
-
-    // ---- Save: preview overlay + canvas export ------------------------------
-    const saveBtn = document.getElementById("save-btn");
-    const previewEl = document.getElementById("preview");
-    const previewClose = document.getElementById("preview-close");
-    const previewStageBg = document.getElementById("preview-bg");
-    const previewChecker = document.getElementById("preview-checker");
-    const previewWreath = document.getElementById("preview-wreath");
-    const previewPlaced = document.getElementById("preview-placed");
-    const previewBackdrops = document.getElementById("preview-backdrops");
-    const previewDownload = document.getElementById("preview-download");
-
-    // Backdrop chosen in the preview (independent of the on-screen plain stage).
-    const previewState = { backdrop: "transparent" };
-    let previewBuilt = false;
-
-    function buildPreviewBackdrops() {
-      BACKDROPS.forEach((b, i) => {
-        if (i > 0) {
-          const sep = document.createElement("span");
-          sep.className = "pv-sep";
-          sep.setAttribute("aria-hidden", "true");
-          sep.textContent = "/";
-          previewBackdrops.appendChild(sep);
-        }
-        const btn = document.createElement("button");
-        btn.type = "button";
-        btn.className = "pv-toggle";
-        btn.dataset.id = b.id;
-        btn.textContent = b.label;
-        btn.setAttribute("aria-pressed", String(b.id === previewState.backdrop));
-        btn.addEventListener("click", () => {
-          previewState.backdrop = b.id;
-          applyPreviewBackdrop();
+      // ---- Tap-to-place selection ---------------------------------------------
+      function selectFlower(file) {
+        selectedFlower = file;
+        document.querySelectorAll(".bloom").forEach((b) => {
+          b.classList.toggle("bloom--selected", b.dataset.flower === file);
         });
-        previewBackdrops.appendChild(btn);
-      });
-    }
-
-    function applyPreviewBackdrop() {
-      const choice = BACKDROPS.find((b) => b.id === previewState.backdrop);
-      const transparent = !choice || !choice.src;
-      previewChecker.hidden = !transparent;
-      if (transparent) {
-        previewStageBg.hidden = true;
-        previewStageBg.removeAttribute("src");
-      } else {
-        previewStageBg.hidden = false;
-        previewStageBg.src = choice.src;
-      }
-      syncPressed("preview-backdrops", previewState.backdrop);
-    }
-
-    // Backgrounds appear only in the save preview, so they are never requested
-    // on initial load - we fetch them lazily the first time the preview opens.
-    let backdropsPreloaded = false;
-    function preloadBackdrops() {
-      if (backdropsPreloaded) return;
-      backdropsPreloaded = true;
-      BACKDROPS.forEach((b) => { if (b.src) loadImage(b.src).catch(() => {}); });
-    }
-
-    function openPreview() {
-      if (!previewBuilt) { buildPreviewBackdrops(); previewBuilt = true; }
-      preloadBackdrops();
-      // Mirror the current crown: same wreath, and a faithful copy of the
-      // placed flowers (their inline left/top/--rot/z-index carry over).
-      const wreath = WREATHS.find((w) => w.id === state.wreath);
-      previewWreath.src = wreath ? wreath.src : "";
-      previewPlaced.innerHTML = placedLayer.innerHTML;
-      applyPreviewBackdrop();
-      previewEl.hidden = false;
-      previewClose.focus();
-      document.addEventListener("keydown", onPreviewKey);
-    }
-
-    function closePreview() {
-      previewEl.hidden = true;
-      document.removeEventListener("keydown", onPreviewKey);
-      saveBtn.focus();
-    }
-
-    function onPreviewKey(e) {
-      if (e.key === "Escape") closePreview();
-    }
-
-    // Build the ordered list of draw operations: one per filled hook, except the
-    // 6:00 flower which becomes two clipped passes (stem beneath all, bloom atop).
-    function buildDrawItems() {
-      const items = [];
-      placements.forEach((els, i) => {
-        if (!els) return;
-        const file = els[0].dataset.file;
-        const h = HOOKS[i];
-        if (i === SPLIT_HOOK) {
-          items.push({ z: 0, file, ang: h.angleDeg, x: h.xFrac, y: h.yFrac, clip: "stem" });
-          items.push({ z: 999, file, ang: h.angleDeg, x: h.xFrac, y: h.yFrac, clip: "bloom" });
-        } else {
-          items.push({ z: zForHook(i), file, ang: h.angleDeg, x: h.xFrac, y: h.yFrac, clip: "none" });
-        }
-      });
-      items.sort((a, b) => a.z - b.z);
-      return items;
-    }
-
-    function loadImage(src) {
-      return new Promise((resolve, reject) => {
-        const img = new Image();
-        img.onload = () => resolve(img);
-        img.onerror = () => reject(new Error("Failed to load " + src));
-        img.src = src;
-      });
-    }
-
-    // Redraw the crown onto a square canvas using the same maths as the screen:
-    // backdrop (or transparent), wreath ring, then flowers in spiral z-order.
-    async function renderCrownCanvas(size, backdropId) {
-      const canvas = document.createElement("canvas");
-      canvas.width = size;
-      canvas.height = size;
-      const ctx = canvas.getContext("2d");
-      ctx.imageSmoothingEnabled = true;
-      ctx.imageSmoothingQuality = "high";
-
-      const backdrop = BACKDROPS.find((b) => b.id === backdropId);
-      if (backdrop && backdrop.src) {
-        const bg = await loadImage(backdrop.src);
-        ctx.drawImage(bg, 0, 0, size, size); // square source over square canvas = cover
       }
 
-      const wreath = WREATHS.find((w) => w.id === state.wreath);
-      if (wreath) {
-        const wi = await loadImage(wreath.src);
-        ctx.drawImage(wi, 0, 0, size, size);
+      function deselectFlower() {
+        if (!selectedFlower) return;
+        selectedFlower = null;
+        document
+          .querySelectorAll(".bloom--selected")
+          .forEach((b) => b.classList.remove("bloom--selected"));
+        setActiveHook(null);
       }
 
-      const items = buildDrawItems();
-      const files = [...new Set(items.map((it) => it.file))];
-      const imgs = {};
-      await Promise.all(files.map(async (f) => { imgs[f] = await loadImage("flowers/" + f); }));
-
-      const d = PLACED_SIZE_RATIO * size; // placed flower diameter
-      for (const it of items) {
-        ctx.save();
-        ctx.translate(it.x * size, it.y * size);
-        ctx.rotate(((it.ang + 90) * Math.PI) / 180);
-        if (it.clip === "bloom") {
-          ctx.beginPath();
-          ctx.rect(-d / 2, -d / 2, d, d * (1 - BLOOM_BOTTOM_INSET));
-          ctx.clip();
-        } else if (it.clip === "stem") {
-          ctx.beginPath();
-          ctx.rect(-d / 2, -d / 2 + d * STEM_TOP_INSET, d, d * (1 - STEM_TOP_INSET));
-          ctx.clip();
-        }
-        ctx.drawImage(imgs[it.file], -d / 2, -d / 2, d, d);
-        ctx.restore();
+      // Tap/click on the wreath places the selected flower at the nearest hook.
+      // Selection persists so several hooks can be filled in a row.
+      function onStageClick(ev) {
+        if (!selectedFlower) return;
+        const hook = hookAtPointer(ev.clientX, ev.clientY);
+        if (hook != null) placeFlower(hook, selectedFlower);
       }
-      return canvas;
-    }
 
-    function isIOS() {
-      return /iP(hone|ad|od)/.test(navigator.userAgent) ||
-        (navigator.platform === "MacIntel" && navigator.maxTouchPoints > 1);
-    }
+      // Desktop: while a flower is selected, hovering the ring highlights the hook
+      // it would land on, just like dragging.
+      function onStageHover(ev) {
+        if (ev.pointerType === "touch" || drag || !selectedFlower) return;
+        setActiveHook(hookAtPointer(ev.clientX, ev.clientY));
+      }
+      function onStageLeave() {
+        if (!drag) setActiveHook(null);
+      }
 
-    // Trigger a download; fall back to opening the image where downloads are
-    // blocked (notably iOS Safari) so the user can long-press or share it.
-    function saveCanvas(canvas) {
-      canvas.toBlob((blob) => {
-        if (!blob) { window.open(canvas.toDataURL("image/png"), "_blank"); return; }
-        const url = URL.createObjectURL(blob);
-        const a = document.createElement("a");
-        const canDownload = typeof a.download !== "undefined";
-        if (isIOS() || !canDownload) {
-          const win = window.open();
-          if (win) {
-            win.document.title = "solstice-crown.png";
-            win.document.body.style.margin = "0";
-            win.document.body.innerHTML =
-              '<img src="' + url + '" alt="Your solstice crown" style="width:100%;height:auto;display:block">';
-          } else {
-            window.location.href = url;
-          }
-          setTimeout(() => URL.revokeObjectURL(url), 60000);
+      // A click off any flower and away from the wreath clears the selection.
+      function onDocumentClick(ev) {
+        if (!selectedFlower) return;
+        if (
+          ev.target.closest(".bloom") ||
+          ev.target.closest("#stage") ||
+          ev.target.closest(".preview")
+        )
           return;
-        }
-        a.href = url;
-        a.download = "solstice-crown.png";
-        document.body.appendChild(a);
-        a.click();
-        a.remove();
-        setTimeout(() => URL.revokeObjectURL(url), 20000);
-      }, "image/png");
-    }
-
-    async function downloadCrown() {
-      previewDownload.disabled = true;
-      try {
-        const canvas = await renderCrownCanvas(1200, previewState.backdrop);
-        saveCanvas(canvas);
-      } catch (err) {
-        console.error("Could not render crown", err);
-      } finally {
-        previewDownload.disabled = false;
+        deselectFlower();
       }
-    }
 
-    // ---- Scroll cue: fade away once the user starts scrolling ---------------
-    const scrollCue = document.getElementById("scroll-cue");
-    function dismissScrollCue() {
-      scrollCue.classList.add("is-hidden");
-      window.removeEventListener("scroll", onScrollOnce);
-    }
-    function onScrollOnce() {
-      if (window.scrollY > 12) dismissScrollCue();
-    }
-    window.addEventListener("scroll", onScrollOnce, { passive: true });
+      // Nearest hook to a screen point, or null when the pointer is away from the ring.
+      function hookAtPointer(cx, cy) {
+        const r = stageEl.getBoundingClientRect();
+        const margin = r.width * 0.15;
+        if (
+          cx < r.left - margin ||
+          cx > r.right + margin ||
+          cy < r.top - margin ||
+          cy > r.bottom + margin
+        )
+          return null;
+        let best = null,
+          bestD = Infinity;
+        for (const h of HOOKS) {
+          const hx = r.left + h.xFrac * r.width;
+          const hy = r.top + h.yFrac * r.height;
+          const d = (hx - cx) ** 2 + (hy - cy) ** 2;
+          if (d < bestD) {
+            bestD = d;
+            best = h.index;
+          }
+        }
+        return best;
+      }
 
-    // Only show the cue when there is actually something to scroll to. Checked
-    // after load (and on resize) so flower images have contributed their height.
-    function evaluateScrollCueFit() {
-      if (scrollCue.classList.contains("is-hidden")) return;
-      const fits = document.documentElement.scrollHeight <= window.innerHeight + 4;
-      scrollCue.classList.toggle("scroll-cue--fits", fits);
-    }
-    window.addEventListener("load", evaluateScrollCueFit);
-    window.addEventListener("resize", evaluateScrollCueFit);
+      function setActiveHook(i) {
+        if (activeHook === i) return;
+        if (activeHook != null && hookEls[activeHook])
+          hookEls[activeHook].classList.remove("hook--active");
+        activeHook = i;
+        if (i != null && hookEls[i]) hookEls[i].classList.add("hook--active");
+      }
 
-    // ---- Init ---------------------------------------------------------------
-    // buildBackdropChoices() is intentionally not called yet - the backdrop
-    // selector returns at the save step. The function and BACKDROPS stay in place.
-    buildWreathChoices();
-    buildPalette();
-    buildHooks();
-    applyBackdrop();
-    applyWreath();
-    refreshCrownUI();
-    clearBtn.addEventListener("click", clearCrown);
-    evaluateScrollCueFit();
+      // ---- Save: preview overlay + canvas export ------------------------------
+      const saveBtn = document.getElementById("save-btn");
+      const previewEl = document.getElementById("preview");
+      const previewClose = document.getElementById("preview-close");
+      const previewStageBg = document.getElementById("preview-bg");
+      const previewChecker = document.getElementById("preview-checker");
+      const previewWreath = document.getElementById("preview-wreath");
+      const previewPlaced = document.getElementById("preview-placed");
+      const previewBackdrops = document.getElementById("preview-backdrops");
+      const previewDownload = document.getElementById("preview-download");
 
-    saveBtn.addEventListener("click", openPreview);
-    previewClose.addEventListener("click", closePreview);
-    previewDownload.addEventListener("click", downloadCrown);
-    // Click on the dimmed area (outside the dialog) closes the preview.
-    previewEl.addEventListener("click", (e) => { if (e.target === previewEl) closePreview(); });
+      // Backdrop chosen in the preview (independent of the on-screen plain stage).
+      const previewState = { backdrop: "transparent" };
+      let previewBuilt = false;
 
-    // Tap-to-place: place on the ring, highlight on hover, deselect on outside click.
-    stageEl.addEventListener("click", onStageClick);
-    stageEl.addEventListener("pointermove", onStageHover);
-    stageEl.addEventListener("pointerleave", onStageLeave);
-    document.addEventListener("click", onDocumentClick);
-  </script>
-</body>
+      function buildPreviewBackdrops() {
+        BACKDROPS.forEach((b, i) => {
+          if (i > 0) {
+            const sep = document.createElement("span");
+            sep.className = "pv-sep";
+            sep.setAttribute("aria-hidden", "true");
+            sep.textContent = "/";
+            previewBackdrops.appendChild(sep);
+          }
+          const btn = document.createElement("button");
+          btn.type = "button";
+          btn.className = "pv-toggle";
+          btn.dataset.id = b.id;
+          btn.textContent = b.label;
+          btn.setAttribute(
+            "aria-pressed",
+            String(b.id === previewState.backdrop),
+          );
+          btn.addEventListener("click", () => {
+            previewState.backdrop = b.id;
+            applyPreviewBackdrop();
+          });
+          previewBackdrops.appendChild(btn);
+        });
+      }
+
+      function applyPreviewBackdrop() {
+        const choice = BACKDROPS.find((b) => b.id === previewState.backdrop);
+        const transparent = !choice || !choice.src;
+        previewChecker.hidden = !transparent;
+        if (transparent) {
+          previewStageBg.hidden = true;
+          previewStageBg.removeAttribute("src");
+        } else {
+          previewStageBg.hidden = false;
+          previewStageBg.src = choice.src;
+        }
+        syncPressed("preview-backdrops", previewState.backdrop);
+      }
+
+      // Backgrounds appear only in the save preview, so they are never requested
+      // on initial load - we fetch them lazily the first time the preview opens.
+      let backdropsPreloaded = false;
+      function preloadBackdrops() {
+        if (backdropsPreloaded) return;
+        backdropsPreloaded = true;
+        BACKDROPS.forEach((b) => {
+          if (b.src) loadImage(b.src).catch(() => {});
+        });
+      }
+
+      function openPreview() {
+        if (!previewBuilt) {
+          buildPreviewBackdrops();
+          previewBuilt = true;
+        }
+        preloadBackdrops();
+        // Mirror the current crown: same wreath, and a faithful copy of the
+        // placed flowers (their inline left/top/--rot/z-index carry over).
+        const wreath = WREATHS.find((w) => w.id === state.wreath);
+        previewWreath.src = wreath ? wreath.src : "";
+        previewPlaced.innerHTML = placedLayer.innerHTML;
+        applyPreviewBackdrop();
+        previewEl.hidden = false;
+        previewClose.focus();
+        document.addEventListener("keydown", onPreviewKey);
+      }
+
+      function closePreview() {
+        previewEl.hidden = true;
+        document.removeEventListener("keydown", onPreviewKey);
+        saveBtn.focus();
+      }
+
+      function onPreviewKey(e) {
+        if (e.key === "Escape") closePreview();
+      }
+
+      // Build the ordered list of draw operations: one per filled hook, except the
+      // 6:00 flower which becomes two clipped passes (stem beneath all, bloom atop).
+      function buildDrawItems() {
+        const items = [];
+        placements.forEach((els, i) => {
+          if (!els) return;
+          const file = els[0].dataset.file;
+          const h = HOOKS[i];
+          if (i === SPLIT_HOOK) {
+            items.push({
+              z: 0,
+              file,
+              ang: h.angleDeg,
+              x: h.xFrac,
+              y: h.yFrac,
+              clip: "stem",
+            });
+            items.push({
+              z: 999,
+              file,
+              ang: h.angleDeg,
+              x: h.xFrac,
+              y: h.yFrac,
+              clip: "bloom",
+            });
+          } else {
+            items.push({
+              z: zForHook(i),
+              file,
+              ang: h.angleDeg,
+              x: h.xFrac,
+              y: h.yFrac,
+              clip: "none",
+            });
+          }
+        });
+        items.sort((a, b) => a.z - b.z);
+        return items;
+      }
+
+      function loadImage(src) {
+        return new Promise((resolve, reject) => {
+          const img = new Image();
+          img.onload = () => resolve(img);
+          img.onerror = () => reject(new Error("Failed to load " + src));
+          img.src = src;
+        });
+      }
+
+      // Redraw the crown onto a square canvas using the same maths as the screen:
+      // backdrop (or transparent), wreath ring, then flowers in spiral z-order.
+      async function renderCrownCanvas(size, backdropId) {
+        const canvas = document.createElement("canvas");
+        canvas.width = size;
+        canvas.height = size;
+        const ctx = canvas.getContext("2d");
+        ctx.imageSmoothingEnabled = true;
+        ctx.imageSmoothingQuality = "high";
+
+        const backdrop = BACKDROPS.find((b) => b.id === backdropId);
+        if (backdrop && backdrop.src) {
+          const bg = await loadImage(backdrop.src);
+          ctx.drawImage(bg, 0, 0, size, size); // square source over square canvas = cover
+        }
+
+        const wreath = WREATHS.find((w) => w.id === state.wreath);
+        if (wreath) {
+          const wi = await loadImage(wreath.src);
+          ctx.drawImage(wi, 0, 0, size, size);
+        }
+
+        const items = buildDrawItems();
+        const files = [...new Set(items.map((it) => it.file))];
+        const imgs = {};
+        await Promise.all(
+          files.map(async (f) => {
+            imgs[f] = await loadImage("flowers/" + f);
+          }),
+        );
+
+        const d = PLACED_SIZE_RATIO * size; // placed flower diameter
+        for (const it of items) {
+          ctx.save();
+          ctx.translate(it.x * size, it.y * size);
+          ctx.rotate(((it.ang + 90) * Math.PI) / 180);
+          if (it.clip === "bloom") {
+            ctx.beginPath();
+            ctx.rect(-d / 2, -d / 2, d, d * (1 - BLOOM_BOTTOM_INSET));
+            ctx.clip();
+          } else if (it.clip === "stem") {
+            ctx.beginPath();
+            ctx.rect(
+              -d / 2,
+              -d / 2 + d * STEM_TOP_INSET,
+              d,
+              d * (1 - STEM_TOP_INSET),
+            );
+            ctx.clip();
+          }
+          ctx.drawImage(imgs[it.file], -d / 2, -d / 2, d, d);
+          ctx.restore();
+        }
+        return canvas;
+      }
+
+      function isIOS() {
+        return (
+          /iP(hone|ad|od)/.test(navigator.userAgent) ||
+          (navigator.platform === "MacIntel" && navigator.maxTouchPoints > 1)
+        );
+      }
+
+      // Trigger a download; fall back to opening the image where downloads are
+      // blocked (notably iOS Safari) so the user can long-press or share it.
+      function saveCanvas(canvas) {
+        canvas.toBlob((blob) => {
+          if (!blob) {
+            window.open(canvas.toDataURL("image/png"), "_blank");
+            return;
+          }
+          const url = URL.createObjectURL(blob);
+          const a = document.createElement("a");
+          const canDownload = typeof a.download !== "undefined";
+          if (isIOS() || !canDownload) {
+            const win = window.open();
+            if (win) {
+              win.document.title = "solstice-crown.png";
+              win.document.body.style.margin = "0";
+              win.document.body.innerHTML =
+                '<img src="' +
+                url +
+                '" alt="Your solstice crown" style="width:100%;height:auto;display:block">';
+            } else {
+              window.location.href = url;
+            }
+            setTimeout(() => URL.revokeObjectURL(url), 60000);
+            return;
+          }
+          a.href = url;
+          a.download = "solstice-crown.png";
+          document.body.appendChild(a);
+          a.click();
+          a.remove();
+          setTimeout(() => URL.revokeObjectURL(url), 20000);
+        }, "image/png");
+      }
+
+      async function downloadCrown() {
+        previewDownload.disabled = true;
+        try {
+          const canvas = await renderCrownCanvas(1200, previewState.backdrop);
+          saveCanvas(canvas);
+        } catch (err) {
+          console.error("Could not render crown", err);
+        } finally {
+          previewDownload.disabled = false;
+        }
+      }
+
+      // ---- Scroll cue: fade away once the user starts scrolling ---------------
+      const scrollCue = document.getElementById("scroll-cue");
+      function dismissScrollCue() {
+        scrollCue.classList.add("is-hidden");
+        window.removeEventListener("scroll", onScrollOnce);
+      }
+      function onScrollOnce() {
+        if (window.scrollY > 12) dismissScrollCue();
+      }
+      window.addEventListener("scroll", onScrollOnce, { passive: true });
+
+      // Only show the cue when there is actually something to scroll to. Checked
+      // after load (and on resize) so flower images have contributed their height.
+      function evaluateScrollCueFit() {
+        if (scrollCue.classList.contains("is-hidden")) return;
+        const fits =
+          document.documentElement.scrollHeight <= window.innerHeight + 4;
+        scrollCue.classList.toggle("scroll-cue--fits", fits);
+      }
+      window.addEventListener("load", evaluateScrollCueFit);
+      window.addEventListener("resize", evaluateScrollCueFit);
+
+      // ---- Init ---------------------------------------------------------------
+      // buildBackdropChoices() is intentionally not called yet - the backdrop
+      // selector returns at the save step. The function and BACKDROPS stay in place.
+      buildWreathChoices();
+      buildPalette();
+      buildHooks();
+      applyBackdrop();
+      applyWreath();
+      refreshCrownUI();
+      clearBtn.addEventListener("click", clearCrown);
+      evaluateScrollCueFit();
+
+      saveBtn.addEventListener("click", openPreview);
+      previewClose.addEventListener("click", closePreview);
+      previewDownload.addEventListener("click", downloadCrown);
+      // Click on the dimmed area (outside the dialog) closes the preview.
+      previewEl.addEventListener("click", (e) => {
+        if (e.target === previewEl) closePreview();
+      });
+
+      // Tap-to-place: place on the ring, highlight on hover, deselect on outside click.
+      stageEl.addEventListener("click", onStageClick);
+      stageEl.addEventListener("pointermove", onStageHover);
+      stageEl.addEventListener("pointerleave", onStageLeave);
+      document.addEventListener("click", onDocumentClick);
+    </script>
+  </body>
 </html>
