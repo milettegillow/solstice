@@ -129,19 +129,23 @@
     /* ---- Crown stage: the hero ---- */
     .stage-wrap { display: flex; flex-direction: column; align-items: center; width: 100%; }
 
-    /* wreath sits centred with its selector stacked to the right */
+    /* The crown stays centred on the page (balanced 1fr columns either side),
+       with its selector living in the right-hand column, pushed further right. */
     .stage-row {
-      display: flex;
+      display: grid;
+      grid-template-columns: 1fr auto 1fr;
       align-items: center;
-      justify-content: center;
-      gap: clamp(0.6rem, 2vw, 1.1rem);
+      width: 100%;
     }
 
     /* Plain stage: no panel, border or background - the wreath sits directly
        on the page. (Backdrop framing returns later, at the save step.) */
     .stage {
       position: relative;
-      width: min(100%, var(--stage-max));
+      grid-column: 2;
+      justify-self: center;
+      width: var(--stage-max);
+      max-width: 100%;
       aspect-ratio: 1 / 1;
     }
 
@@ -183,8 +187,12 @@
       gap: 0.6rem;
     }
 
-    /* wreath choices: three compact circular thumbnails, stacked vertically */
+    /* wreath choices: three compact circular thumbnails, stacked vertically,
+       sitting in the right-hand column and nudged further right of the crown */
     .wreath-choices {
+      grid-column: 3;
+      justify-self: start;
+      margin-left: clamp(1rem, 4vw, 3rem);
       display: flex;
       flex-direction: column;
       gap: 0.55rem;
@@ -289,7 +297,6 @@
 <body>
   <main class="page">
     <header class="masthead">
-      <p class="eyebrow">Summer Solstice</p>
       <h1>The Solstice Crown</h1>
       <hr class="rule" />
     </header>
@@ -311,8 +318,6 @@
         <div class="palette" id="palette"></div>
       </section>
     </div>
-
-    <p class="colophon">Made for the longest day. Meanings drawn from the language of flowers and country folklore.</p>
   </main>
 
   <script>
