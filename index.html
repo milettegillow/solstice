@@ -5,7 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Solstice Crown - weave a flower crown for midsummer</title>
   <meta name="description" content="Weave a flower crown for the summer solstice. A quiet little green-witch ritual." />
-  <link rel="icon" type="image/png" href="flowers/bluebell.png" />
+  <link rel="icon" type="image/png" href="flowers/foxglove.png" />
 
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
@@ -43,13 +43,13 @@
       --stage-max: clamp(180px, 32vh, 330px);
       --radius: 6px;
 
-      /* placed flower diameter as a share of the stage. Large enough that 24
-         overlap densely, reading as full woven greenery that hides the stalks */
-      --placed-size: 50%;
-      /* split between the two render layers: the front (bloom) layer keeps the
-         top portion of each flower, just below the midline so no bloom is clipped */
-      --bloom-bottom-inset: 44%; /* front keeps top 56% */
-      --stem-top-inset: 50%;     /* back keeps bottom 50% (overlap hidden by bloom) */
+      /* placed flower diameter as a share of the stage, tuned so 24 sit
+         shoulder to shoulder and slightly overlap around the ring */
+      --placed-size: 26%;
+      /* split point for the single bridging flower at 6 o'clock: its bloom half
+         keeps the top, its stem half the bottom, just below the midline */
+      --bloom-bottom-inset: 44%; /* bloom half keeps top 56% */
+      --stem-top-inset: 50%;     /* stem half keeps bottom 50% */
     }
 
     * { box-sizing: border-box; }
@@ -70,7 +70,7 @@
     }
 
     .page {
-      max-width: 980px;
+      max-width: 1200px;
       margin: 0 auto;
       padding: clamp(0.75rem, 2.2vh, 1.5rem) clamp(1rem, 4vw, 2.5rem) clamp(1rem, 3vh, 2rem);
     }
@@ -209,12 +209,11 @@
       box-shadow: 0 0 14px 5px rgba(200, 166, 98, 0.55);
     }
 
-    /* ---- Placed flowers, drawn in two layers so stalks hide behind blooms ----
-       All stem halves sit on the back layer, all bloom halves on the front, so
-       every bloom is in front of every stem around the whole ring (no seam). */
-    .placed-layer { position: absolute; inset: 0; pointer-events: none; }
-    .placed-layer--stems { z-index: 2; }
-    .placed-layer--blooms { z-index: 3; }
+    /* ---- Placed flowers, single layer woven in a spiral z-order ----
+       z-index decreases clockwise from the 6:30 flower (top of stack) round to
+       the 5:30 flower (bottom). The lone 6:00 flower is split into bloom and
+       stem halves to bridge that seam cleanly. */
+    .placed-layer { position: absolute; inset: 0; pointer-events: none; z-index: 2; }
 
     .placed {
       position: absolute;
@@ -224,6 +223,7 @@
          local space so the split rotates with the flower */
       transform: translate(-50%, -50%) rotate(var(--rot, 0deg));
     }
+    /* clip classes used only by the single bridging flower at 6 o'clock */
     .placed--bloom { clip-path: inset(0 0 var(--bloom-bottom-inset) 0); }
     .placed--stem { clip-path: inset(var(--stem-top-inset) 0 0 0); }
     .placed img {
@@ -312,25 +312,24 @@
       margin: 0 0 clamp(0.5rem, 1.4vh, 1rem);
     }
 
-    /* Two rows: 7 blooms above, 8 below. A 56-column grid (LCM of 7 and 8)
-       lets the top seven span 8 each and the bottom eight span 7 each. */
+    /* Five per row in manifest order: two rows of flowers, then the five
+       foliage items together on the third. Generous column spacing so each
+       one-line meaning sits comfortably without wrapping. */
     .palette {
       display: grid;
-      grid-template-columns: repeat(56, 1fr);
-      gap: clamp(0.3rem, 1.2vh, 0.8rem) clamp(0.4rem, 1.5vw, 1rem);
+      grid-template-columns: repeat(5, 1fr);
+      gap: clamp(1rem, 2.5vh, 1.8rem) clamp(1.25rem, 4vw, 3rem);
     }
 
-    .bloom { text-align: center; }
-    .bloom:nth-child(-n + 7) { grid-column: span 8; }
-    .bloom:nth-child(n + 8) { grid-column: span 7; }
+    .bloom { text-align: center; min-width: 0; }
 
     .bloom__img {
       width: 100%;
-      max-width: clamp(84px, 14vh, 150px);
+      max-width: clamp(168px, 28vh, 300px);
       aspect-ratio: 1 / 1;
       object-fit: contain;
       display: block;
-      margin: 0 auto 0.15rem;
+      margin: 0 auto 0.25rem;
       filter: drop-shadow(0 5px 12px rgba(0, 0, 0, 0.45));
       transition: transform 0.25s ease;
       cursor: grab;
@@ -342,18 +341,20 @@
 
     .bloom__name {
       font-family: var(--display);
-      font-size: 1.05rem;
+      font-size: 1.1rem;
       color: var(--cream);
-      line-height: 1.05;
+      line-height: 1.1;
       text-transform: capitalize;
+      white-space: nowrap;
     }
     .bloom__meaning {
       display: block;
-      font-size: 0.74rem;
+      font-size: 0.8rem;
       font-style: italic;
       color: var(--dusk-sage);
       line-height: 1.25;
-      margin-top: 0.05rem;
+      margin-top: 0.1rem;
+      white-space: nowrap;
     }
 
     /* ---- Footer ---- */
@@ -366,14 +367,14 @@
     }
 
     /* ---- Responsive: let it breathe and scroll on smaller screens ---- */
-    @media (max-width: 720px) {
+    @media (max-width: 860px) {
       .palette { grid-template-columns: repeat(3, 1fr); }
-      .bloom:nth-child(-n + 7), .bloom:nth-child(n + 8) { grid-column: auto; }
-      .bloom__img { max-width: 150px; }
+      .bloom__img { max-width: clamp(120px, 24vh, 200px); }
     }
-    @media (max-width: 440px) {
+    @media (max-width: 480px) {
       body { font-size: 17px; }
       .palette { grid-template-columns: repeat(2, 1fr); }
+      .bloom__meaning { font-size: 0.72rem; white-space: normal; }
     }
 
     @media (prefers-reduced-motion: reduce) {
@@ -396,8 +397,7 @@
             <img class="stage__backdrop" id="backdrop" alt="" />
             <img class="stage__wreath" id="wreath" alt="Greenery wreath base" />
             <div class="hooks" id="hooks" aria-hidden="true"></div>
-            <div class="placed-layer placed-layer--stems" id="stem-layer"></div>
-            <div class="placed-layer placed-layer--blooms" id="bloom-layer"></div>
+            <div class="placed-layer" id="placed-layer"></div>
           </div>
           <div class="wreath-choices" id="wreath-choices" role="group" aria-label="Greenery base"></div>
         </div>
@@ -572,12 +572,16 @@
 
     const stageEl = document.getElementById("stage");
     const hooksLayer = document.getElementById("hooks");
-    const stemLayer = document.getElementById("stem-layer");
-    const bloomLayer = document.getElementById("bloom-layer");
+    const placedLayer = document.getElementById("placed-layer");
     const hintEl = document.getElementById("stage-hint");
     const clearBtn = document.getElementById("crown-clear");
 
-    // HOOKS holds the geometry; placements[i] is { stem, bloom } at hook i (or null).
+    // The 6 o'clock hook is split into two halves to bridge the spiral seam.
+    // With 24 hooks from the top clockwise, hook 12 is 6:00, 13 is 6:30, 11 is 5:30.
+    const SPLIT_HOOK = HOOK_COUNT / 2; // 12 = bottom centre
+
+    // HOOKS holds the geometry; placements[i] is an array of placed elements
+    // (one per normal hook, two for the split hook) or null.
     const HOOKS = [];
     const hookEls = [];
     const placements = new Array(HOOK_COUNT).fill(null);
@@ -602,49 +606,61 @@
       }
     }
 
-    // Build one half-element (bloom or stem) for a hook, positioned and rotated
-    // identically; the clip-path (set in CSS by class) shows only its half.
-    function makeHalf(h, index, halfClass) {
+    // Spiral z-order: highest at 6:30 (hook 13), stepping down clockwise to the
+    // lowest at 5:30 (hook 11). Step of 2 leaves room for the split flower's two
+    // halves to slot in at 99 (just under 6:30) and 57 (just over 5:30).
+    function zForHook(index) {
+      const k = (index - (SPLIT_HOOK + 1) + HOOK_COUNT) % HOOK_COUNT; // 0 at 6:30
+      return 100 - 2 * k;
+    }
+
+    // Build a placed element for a hook, positioned and rotated tangent to the
+    // ring. halfClass ("" | "placed--bloom" | "placed--stem") clips the split flower.
+    function makePlaced(h, index, halfClass, z) {
       const el = document.createElement("div");
-      el.className = "placed " + halfClass;
+      el.className = "placed" + (halfClass ? " " + halfClass : "");
       el.dataset.hook = index;
       el.style.left = (h.xFrac * 100) + "%";
       el.style.top = (h.yFrac * 100) + "%";
       // Lie tangent to the ring: +90 from radial-outward so the bloom head
       // leads clockwise and the stem trails behind it.
       el.style.setProperty("--rot", (h.angleDeg + 90) + "deg");
-      // z-index climbs clockwise so each flower shingles its neighbour the same
-      // way within its layer (woven, consistent overlap).
-      el.style.zIndex = index + 1;
+      el.style.zIndex = z;
       const img = document.createElement("img");
       img.alt = "";
       el.appendChild(img);
       return el;
     }
 
-    // Place (or replace) a flower on a hook. The stem half goes on the back layer
-    // and the bloom half on the front layer, so every bloom hides every stem.
+    // Place (or replace) a flower on a hook. Every flower is a single element
+    // except the 6:00 bridge flower, which is two halves slotted into the seam.
     function placeFlower(index, file) {
       const h = HOOKS[index];
-      let entry = placements[index];
-      if (!entry) {
-        const stem = makeHalf(h, index, "placed--stem");
-        const bloom = makeHalf(h, index, "placed--bloom");
-        stemLayer.appendChild(stem);
-        bloomLayer.appendChild(bloom);
-        entry = { stem, bloom };
-        placements[index] = entry;
+      let els = placements[index];
+      if (!els) {
+        if (index === SPLIT_HOOK) {
+          // bloom half just below 6:30 (z 99), stem half just above 5:30 (z 57)
+          const stem = makePlaced(h, index, "placed--stem", 57);
+          const bloom = makePlaced(h, index, "placed--bloom", 99);
+          placedLayer.append(stem, bloom);
+          els = [stem, bloom];
+        } else {
+          const el = makePlaced(h, index, "", zForHook(index));
+          placedLayer.appendChild(el);
+          els = [el];
+        }
+        placements[index] = els;
       }
-      entry.stem.dataset.file = file;
-      entry.bloom.dataset.file = file;
-      entry.stem.querySelector("img").src = "flowers/" + file;
-      entry.bloom.querySelector("img").src = "flowers/" + file;
+      els.forEach((el) => {
+        el.dataset.file = file;
+        el.querySelector("img").src = "flowers/" + file;
+      });
       refreshCrownUI();
     }
 
     function clearCrown() {
-      placements.forEach((entry) => {
-        if (entry) { entry.stem.remove(); entry.bloom.remove(); }
+      placements.forEach((els) => {
+        if (els) els.forEach((el) => el.remove());
       });
       placements.fill(null);
       refreshCrownUI();
@@ -669,7 +685,7 @@
       const ghost = document.createElement("img");
       ghost.className = "ghost";
       ghost.src = "flowers/" + file;
-      ghost.style.width = stageEl.clientWidth * 0.5 + "px";
+      ghost.style.width = stageEl.clientWidth * 0.26 + "px";
       document.body.appendChild(ghost);
 
       drag = { file, ghost };
