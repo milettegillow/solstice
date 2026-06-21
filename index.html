@@ -530,9 +530,32 @@
       gap: clamp(1rem, 2.5vh, 1.8rem) clamp(1.25rem, 4vw, 3rem);
     }
 
-    .bloom { text-align: center; min-width: 0; }
+    .bloom { text-align: center; min-width: 0; position: relative; }
+
+    /* warm halo behind the selected flower (tap-to-place selection) */
+    .bloom::before {
+      content: "";
+      position: absolute;
+      top: 0;
+      left: 50%;
+      width: 100%;
+      aspect-ratio: 1 / 1;
+      transform: translateX(-50%) scale(0.9);
+      border-radius: 50%;
+      background: radial-gradient(circle at 50% 50%,
+        rgba(214, 180, 110, 0.55) 0%,
+        rgba(200, 166, 98, 0.28) 38%,
+        rgba(200, 166, 98, 0) 70%);
+      opacity: 0;
+      transition: opacity 0.3s ease, transform 0.3s ease;
+      pointer-events: none;
+      z-index: 0;
+    }
+    .bloom--selected::before { opacity: 1; transform: translateX(-50%) scale(1.05); }
 
     .bloom__img {
+      position: relative;
+      z-index: 1;
       width: 100%;
       max-width: clamp(168px, 28vh, 300px);
       aspect-ratio: 1 / 1;
@@ -546,6 +569,7 @@
       user-select: none;
     }
     .bloom__img:active { cursor: grabbing; }
+    .bloom figcaption { position: relative; z-index: 1; }
     .bloom:hover .bloom__img { transform: translateY(-4px) scale(1.03); }
 
     .bloom__name {
@@ -620,7 +644,7 @@
             </button>
           </div>
         </div>
-        <p class="stage__caption" id="stage-hint">Drag a flower onto the ring to begin.</p>
+        <p class="stage__caption" id="stage-hint">Tap or drag a flower onto the ring to begin.</p>
         <button type="button" class="crown-clear" id="crown-clear" hidden>Clear crown</button>
       </section>
 
@@ -789,7 +813,7 @@
         img.alt = f.name;
         img.loading = "lazy";
         img.draggable = false;
-        img.addEventListener("pointerdown", (ev) => startDrag(f.file, ev));
+        img.addEventListener("pointerdown", (ev) => onPaletteDown(f.file, ev));
 
         const caption = document.createElement("figcaption");
         const name = document.createElement("span");
@@ -921,28 +945,67 @@
       clearBtn.hidden = count === 0;
     }
 
-    // ---- Custom pointer drag (desktop) --------------------------------------
-    // Reused for mobile tap and for moving placed flowers in the next commit.
+    // ---- Placing flowers: drag-from-palette AND tap-to-place ----------------
+    // A press on a palette flower is "pending" until we know what it is: enough
+    // movement (mouse/pen) starts a drag; a press with no movement is a tap that
+    // selects the flower. On touch, movement is left to the browser as a scroll.
     let drag = null;
     let activeHook = null;
+    let pending = null;
+    let selectedFlower = null;
+    const MOVE_THRESHOLD = 6; // px before a press counts as a drag
 
-    function startDrag(file, ev) {
-      // Touch gets a dedicated tap flow in the next commit; desktop drag only here.
-      if (ev.pointerType === "touch") return;
-      ev.preventDefault();
+    function onPaletteDown(file, ev) {
+      if (ev.button != null && ev.button > 0) return; // primary button / touch only
+      if (ev.pointerType !== "touch") ev.preventDefault(); // avoid native image drag/select
+      pending = { file, x: ev.clientX, y: ev.clientY, type: ev.pointerType, started: false };
+      window.addEventListener("pointermove", onPendingMove);
+      window.addEventListener("pointerup", onPendingUp);
+      window.addEventListener("pointercancel", onPendingCancel);
+    }
 
+    function onPendingMove(ev) {
+      if (!pending) return;
+      if (!pending.started) {
+        const dist = Math.hypot(ev.clientX - pending.x, ev.clientY - pending.y);
+        if (dist < MOVE_THRESHOLD) return;
+        if (pending.type === "touch") { clearPending(); return; } // let the page scroll
+        beginDrag(pending.file, ev);
+        pending.started = true;
+      }
+      onDragMove(ev);
+    }
+
+    function onPendingUp(ev) {
+      if (!pending) return;
+      const wasDrag = pending.started;
+      const file = pending.file;
+      clearPending();
+      if (wasDrag) onDragEnd(ev);
+      else selectFlower(file); // a tap selects (drag handled its own drop)
+    }
+
+    function onPendingCancel() {
+      if (!pending) return;
+      if (pending.started) endDrag();
+      clearPending();
+    }
+
+    function clearPending() {
+      pending = null;
+      window.removeEventListener("pointermove", onPendingMove);
+      window.removeEventListener("pointerup", onPendingUp);
+      window.removeEventListener("pointercancel", onPendingCancel);
+    }
+
+    function beginDrag(file, ev) {
       const ghost = document.createElement("img");
       ghost.className = "ghost";
       ghost.src = "flowers/" + file;
       ghost.style.width = stageEl.clientWidth * 0.26 + "px";
       document.body.appendChild(ghost);
-
       drag = { file, ghost };
       moveGhost(ev.clientX, ev.clientY);
-
-      window.addEventListener("pointermove", onDragMove);
-      window.addEventListener("pointerup", onDragEnd);
-      window.addEventListener("pointercancel", onDragEnd);
     }
 
     function moveGhost(x, y) {
@@ -968,9 +1031,46 @@
       if (drag && drag.ghost) drag.ghost.remove();
       drag = null;
       setActiveHook(null);
-      window.removeEventListener("pointermove", onDragMove);
-      window.removeEventListener("pointerup", onDragEnd);
-      window.removeEventListener("pointercancel", onDragEnd);
+    }
+
+    // ---- Tap-to-place selection ---------------------------------------------
+    function selectFlower(file) {
+      selectedFlower = file;
+      document.querySelectorAll(".bloom").forEach((b) => {
+        b.classList.toggle("bloom--selected", b.dataset.flower === file);
+      });
+    }
+
+    function deselectFlower() {
+      if (!selectedFlower) return;
+      selectedFlower = null;
+      document.querySelectorAll(".bloom--selected").forEach((b) => b.classList.remove("bloom--selected"));
+      setActiveHook(null);
+    }
+
+    // Tap/click on the wreath places the selected flower at the nearest hook.
+    // Selection persists so several hooks can be filled in a row.
+    function onStageClick(ev) {
+      if (!selectedFlower) return;
+      const hook = hookAtPointer(ev.clientX, ev.clientY);
+      if (hook != null) placeFlower(hook, selectedFlower);
+    }
+
+    // Desktop: while a flower is selected, hovering the ring highlights the hook
+    // it would land on, just like dragging.
+    function onStageHover(ev) {
+      if (ev.pointerType === "touch" || drag || !selectedFlower) return;
+      setActiveHook(hookAtPointer(ev.clientX, ev.clientY));
+    }
+    function onStageLeave() {
+      if (!drag) setActiveHook(null);
+    }
+
+    // A click off any flower and away from the wreath clears the selection.
+    function onDocumentClick(ev) {
+      if (!selectedFlower) return;
+      if (ev.target.closest(".bloom") || ev.target.closest("#stage") || ev.target.closest(".preview")) return;
+      deselectFlower();
     }
 
     // Nearest hook to a screen point, or null when the pointer is away from the ring.
@@ -1241,6 +1341,12 @@
     previewDownload.addEventListener("click", downloadCrown);
     // Click on the dimmed area (outside the dialog) closes the preview.
     previewEl.addEventListener("click", (e) => { if (e.target === previewEl) closePreview(); });
+
+    // Tap-to-place: place on the ring, highlight on hover, deselect on outside click.
+    stageEl.addEventListener("click", onStageClick);
+    stageEl.addEventListener("pointermove", onStageHover);
+    stageEl.addEventListener("pointerleave", onStageLeave);
+    document.addEventListener("click", onDocumentClick);
   </script>
 </body>
 </html>
