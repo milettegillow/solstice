@@ -5,7 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Solstice Crown - weave a flower crown for midsummer</title>
   <meta name="description" content="Weave a flower crown for the summer solstice. A quiet little green-witch ritual." />
-  <link rel="icon" type="image/png" href="flowers/foxglove.png" />
+  <link rel="icon" type="image/png" href="flowers/bluebell.png" />
 
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
@@ -677,9 +677,9 @@
 
     // ---- Backdrops and wreaths ----------------------------------------------
     const BACKDROPS = [
-      { id: "moss",        label: "Moss",        src: "backgrounds/moss.png" },
-      { id: "bark",        label: "Bark",        src: "backgrounds/bark.png" },
       { id: "transparent", label: "Transparent", src: null },
+      { id: "bark",        label: "Bark",        src: "backgrounds/bark.jpg" },
+      { id: "moss",        label: "Moss",        src: "backgrounds/moss.jpg" },
     ];
 
     const WREATHS = [
@@ -1008,7 +1008,7 @@
     const previewDownload = document.getElementById("preview-download");
 
     // Backdrop chosen in the preview (independent of the on-screen plain stage).
-    const previewState = { backdrop: "moss" };
+    const previewState = { backdrop: "transparent" };
     let previewBuilt = false;
 
     function buildPreviewBackdrops() {
@@ -1048,8 +1048,18 @@
       syncPressed("preview-backdrops", previewState.backdrop);
     }
 
+    // Backgrounds appear only in the save preview, so they are never requested
+    // on initial load - we fetch them lazily the first time the preview opens.
+    let backdropsPreloaded = false;
+    function preloadBackdrops() {
+      if (backdropsPreloaded) return;
+      backdropsPreloaded = true;
+      BACKDROPS.forEach((b) => { if (b.src) loadImage(b.src).catch(() => {}); });
+    }
+
     function openPreview() {
       if (!previewBuilt) { buildPreviewBackdrops(); previewBuilt = true; }
+      preloadBackdrops();
       // Mirror the current crown: same wreath, and a faithful copy of the
       // placed flowers (their inline left/top/--rot/z-index carry over).
       const wreath = WREATHS.find((w) => w.id === state.wreath);
