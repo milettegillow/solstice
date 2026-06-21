@@ -5,6 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Solstice Crown - weave a flower crown for midsummer</title>
   <meta name="description" content="Weave a flower crown for the summer solstice. A quiet little green-witch ritual." />
+  <link rel="icon" type="image/png" href="flowers/bluebell.png" />
 
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
@@ -42,9 +43,13 @@
       --stage-max: clamp(180px, 32vh, 330px);
       --radius: 6px;
 
-      /* placed flower diameter as a share of the stage, tuned so 24 sit
-         shoulder to shoulder and slightly overlap around the ring */
-      --placed-size: 26%;
+      /* placed flower diameter as a share of the stage. Large enough that 24
+         overlap densely, reading as full woven greenery that hides the stalks */
+      --placed-size: 50%;
+      /* split between the two render layers: the front (bloom) layer keeps the
+         top portion of each flower, just below the midline so no bloom is clipped */
+      --bloom-bottom-inset: 44%; /* front keeps top 56% */
+      --stem-top-inset: 50%;     /* back keeps bottom 50% (overlap hidden by bloom) */
     }
 
     * { box-sizing: border-box; }
@@ -204,15 +209,23 @@
       box-shadow: 0 0 14px 5px rgba(200, 166, 98, 0.55);
     }
 
-    /* ---- Placed flowers ---- */
-    .placed-layer { position: absolute; inset: 0; pointer-events: none; z-index: 2; }
+    /* ---- Placed flowers, drawn in two layers so stalks hide behind blooms ----
+       All stem halves sit on the back layer, all bloom halves on the front, so
+       every bloom is in front of every stem around the whole ring (no seam). */
+    .placed-layer { position: absolute; inset: 0; pointer-events: none; }
+    .placed-layer--stems { z-index: 2; }
+    .placed-layer--blooms { z-index: 3; }
+
     .placed {
       position: absolute;
       width: var(--placed-size);
       aspect-ratio: 1 / 1;
-      /* centred on its hook, rotated tangent to the ring */
+      /* centred on its hook, rotated tangent to the ring; the clip-path is in
+         local space so the split rotates with the flower */
       transform: translate(-50%, -50%) rotate(var(--rot, 0deg));
     }
+    .placed--bloom { clip-path: inset(0 0 var(--bloom-bottom-inset) 0); }
+    .placed--stem { clip-path: inset(var(--stem-top-inset) 0 0 0); }
     .placed img {
       width: 100%;
       height: 100%;
@@ -313,7 +326,7 @@
 
     .bloom__img {
       width: 100%;
-      max-width: clamp(64px, 10.5vh, 118px);
+      max-width: clamp(84px, 14vh, 150px);
       aspect-ratio: 1 / 1;
       object-fit: contain;
       display: block;
@@ -356,7 +369,7 @@
     @media (max-width: 720px) {
       .palette { grid-template-columns: repeat(3, 1fr); }
       .bloom:nth-child(-n + 7), .bloom:nth-child(n + 8) { grid-column: auto; }
-      .bloom__img { max-width: 130px; }
+      .bloom__img { max-width: 150px; }
     }
     @media (max-width: 440px) {
       body { font-size: 17px; }
@@ -383,7 +396,8 @@
             <img class="stage__backdrop" id="backdrop" alt="" />
             <img class="stage__wreath" id="wreath" alt="Greenery wreath base" />
             <div class="hooks" id="hooks" aria-hidden="true"></div>
-            <div class="placed-layer" id="placed-layer"></div>
+            <div class="placed-layer placed-layer--stems" id="stem-layer"></div>
+            <div class="placed-layer placed-layer--blooms" id="bloom-layer"></div>
           </div>
           <div class="wreath-choices" id="wreath-choices" role="group" aria-label="Greenery base"></div>
         </div>
@@ -558,11 +572,12 @@
 
     const stageEl = document.getElementById("stage");
     const hooksLayer = document.getElementById("hooks");
-    const placedLayer = document.getElementById("placed-layer");
+    const stemLayer = document.getElementById("stem-layer");
+    const bloomLayer = document.getElementById("bloom-layer");
     const hintEl = document.getElementById("stage-hint");
     const clearBtn = document.getElementById("crown-clear");
 
-    // HOOKS holds the geometry; placements[i] is the placed <div> at hook i (or null).
+    // HOOKS holds the geometry; placements[i] is { stem, bloom } at hook i (or null).
     const HOOKS = [];
     const hookEls = [];
     const placements = new Array(HOOK_COUNT).fill(null);
@@ -587,34 +602,50 @@
       }
     }
 
-    // Place (or replace) a flower on a hook, centred and rotated tangent to the ring.
+    // Build one half-element (bloom or stem) for a hook, positioned and rotated
+    // identically; the clip-path (set in CSS by class) shows only its half.
+    function makeHalf(h, index, halfClass) {
+      const el = document.createElement("div");
+      el.className = "placed " + halfClass;
+      el.dataset.hook = index;
+      el.style.left = (h.xFrac * 100) + "%";
+      el.style.top = (h.yFrac * 100) + "%";
+      // Lie tangent to the ring: +90 from radial-outward so the bloom head
+      // leads clockwise and the stem trails behind it.
+      el.style.setProperty("--rot", (h.angleDeg + 90) + "deg");
+      // z-index climbs clockwise so each flower shingles its neighbour the same
+      // way within its layer (woven, consistent overlap).
+      el.style.zIndex = index + 1;
+      const img = document.createElement("img");
+      img.alt = "";
+      el.appendChild(img);
+      return el;
+    }
+
+    // Place (or replace) a flower on a hook. The stem half goes on the back layer
+    // and the bloom half on the front layer, so every bloom hides every stem.
     function placeFlower(index, file) {
       const h = HOOKS[index];
-      let el = placements[index];
-      if (!el) {
-        el = document.createElement("div");
-        el.className = "placed";
-        el.dataset.hook = index;
-        el.style.left = (h.xFrac * 100) + "%";
-        el.style.top = (h.yFrac * 100) + "%";
-        // Lie tangent to the ring: +90 from radial-outward so the bloom head
-        // leads clockwise and the stem trails behind it.
-        el.style.setProperty("--rot", (h.angleDeg + 90) + "deg");
-        // z-index climbs clockwise so each flower overlaps its neighbour, woven
-        el.style.zIndex = index + 1;
-        const img = document.createElement("img");
-        img.alt = "";
-        el.appendChild(img);
-        placedLayer.appendChild(el);
-        placements[index] = el;
+      let entry = placements[index];
+      if (!entry) {
+        const stem = makeHalf(h, index, "placed--stem");
+        const bloom = makeHalf(h, index, "placed--bloom");
+        stemLayer.appendChild(stem);
+        bloomLayer.appendChild(bloom);
+        entry = { stem, bloom };
+        placements[index] = entry;
       }
-      el.dataset.file = file;
-      el.querySelector("img").src = "flowers/" + file;
+      entry.stem.dataset.file = file;
+      entry.bloom.dataset.file = file;
+      entry.stem.querySelector("img").src = "flowers/" + file;
+      entry.bloom.querySelector("img").src = "flowers/" + file;
       refreshCrownUI();
     }
 
     function clearCrown() {
-      placements.forEach((el) => { if (el) el.remove(); });
+      placements.forEach((entry) => {
+        if (entry) { entry.stem.remove(); entry.bloom.remove(); }
+      });
       placements.fill(null);
       refreshCrownUI();
     }
@@ -638,7 +669,7 @@
       const ghost = document.createElement("img");
       ghost.className = "ghost";
       ghost.src = "flowers/" + file;
-      ghost.style.width = stageEl.clientWidth * 0.26 + "px";
+      ghost.style.width = stageEl.clientWidth * 0.5 + "px";
       document.body.appendChild(ghost);
 
       drag = { file, ghost };
