@@ -222,7 +222,14 @@
       /* centred on its hook, rotated tangent to the ring; the clip-path is in
          local space so the split rotates with the flower */
       transform: translate(-50%, -50%) rotate(var(--rot, 0deg));
+      /* grabbable to move/remove; the layer itself stays click-through so empty
+         ring areas still receive taps. touch-action lets placed flowers drag
+         on touch instead of scrolling the page. */
+      pointer-events: auto;
+      touch-action: none;
+      cursor: grab;
     }
+    .placed:active { cursor: grabbing; }
     /* clip classes used only by the single bridging flower at 6 o'clock */
     .placed--bloom { clip-path: inset(0 0 var(--bloom-bottom-inset) 0); }
     .placed--stem { clip-path: inset(var(--stem-top-inset) 0 0 0); }
@@ -245,6 +252,12 @@
       z-index: 2000;
       opacity: 0.8;
       filter: drop-shadow(0 6px 12px rgba(0, 0, 0, 0.5));
+      transition: opacity 0.2s ease, transform 0.2s ease;
+    }
+    /* over the remove zone (off-ring) while moving a placed flower */
+    .ghost--remove {
+      opacity: 0.3;
+      transform: translate(-50%, -50%) scale(0.88);
     }
 
     /* ---- Clear control: small, quiet, near the crown ---- */
@@ -898,6 +911,7 @@
       // leads clockwise and the stem trails behind it.
       el.style.setProperty("--rot", (h.angleDeg + 90) + "deg");
       el.style.zIndex = z;
+      el.addEventListener("pointerdown", (ev) => onPlacedDown(index, ev));
       const img = document.createElement("img");
       img.alt = "";
       el.appendChild(img);
@@ -945,23 +959,57 @@
       clearBtn.hidden = count === 0;
     }
 
-    // ---- Placing flowers: drag-from-palette AND tap-to-place ----------------
-    // A press on a palette flower is "pending" until we know what it is: enough
-    // movement (mouse/pen) starts a drag; a press with no movement is a tap that
-    // selects the flower. On touch, movement is left to the browser as a scroll.
+    // Remove a placement entirely (both halves, for the split hook).
+    function removePlacement(index) {
+      const els = placements[index];
+      if (els) {
+        els.forEach((el) => el.remove());
+        placements[index] = null;
+        refreshCrownUI();
+      }
+    }
+    // Temporarily hide a placement while its flower is being dragged, so it can
+    // be restored cheaply if the drag is cancelled.
+    function setPlacementHidden(index, hidden) {
+      const els = placements[index];
+      if (els) els.forEach((el) => { el.style.display = hidden ? "none" : ""; });
+    }
+
+    // ---- Placing, moving and removing flowers -------------------------------
+    // A press is "pending" until we know its intent: enough movement starts a
+    // drag; a press with no movement is a tap. The same pointer drag serves a
+    // palette flower (new placement) and a placed flower (move/remove).
+    //   pending.kind: "palette" | "placed"
     let drag = null;
     let activeHook = null;
     let pending = null;
     let selectedFlower = null;
     const MOVE_THRESHOLD = 6; // px before a press counts as a drag
 
-    function onPaletteDown(file, ev) {
-      if (ev.button != null && ev.button > 0) return; // primary button / touch only
-      if (ev.pointerType !== "touch") ev.preventDefault(); // avoid native image drag/select
-      pending = { file, x: ev.clientX, y: ev.clientY, type: ev.pointerType, started: false };
+    function startPending(p) {
+      pending = Object.assign({ started: false }, p);
       window.addEventListener("pointermove", onPendingMove);
       window.addEventListener("pointerup", onPendingUp);
       window.addEventListener("pointercancel", onPendingCancel);
+    }
+
+    // Press on a palette flower: drag to place, or tap to select.
+    function onPaletteDown(file, ev) {
+      if (ev.button != null && ev.button > 0) return; // primary button / touch only
+      if (ev.pointerType !== "touch") ev.preventDefault(); // avoid native image drag/select
+      startPending({ kind: "palette", file, x: ev.clientX, y: ev.clientY, type: ev.pointerType });
+    }
+
+    // Press on a placed flower: drag to move/remove. A plain tap does nothing.
+    // If a palette flower is selected we leave it alone, so the tap places that.
+    function onPlacedDown(index, ev) {
+      if (ev.button != null && ev.button > 0) return;
+      if (selectedFlower) return; // selection mode: let tap-to-place handle the ring
+      const els = placements[index];
+      if (!els) return;
+      ev.preventDefault();
+      startPending({ kind: "placed", file: els[0].dataset.file, sourceHook: index,
+        x: ev.clientX, y: ev.clientY, type: ev.pointerType });
     }
 
     function onPendingMove(ev) {
@@ -969,8 +1017,10 @@
       if (!pending.started) {
         const dist = Math.hypot(ev.clientX - pending.x, ev.clientY - pending.y);
         if (dist < MOVE_THRESHOLD) return;
-        if (pending.type === "touch") { clearPending(); return; } // let the page scroll
-        beginDrag(pending.file, ev);
+        // A palette drag on touch is really a scroll - hand it back to the browser.
+        // (Placed flowers use touch-action:none, so they drag on touch.)
+        if (pending.kind === "palette" && pending.type === "touch") { clearPending(); return; }
+        beginDrag(pending);
         pending.started = true;
       }
       onDragMove(ev);
@@ -979,15 +1029,20 @@
     function onPendingUp(ev) {
       if (!pending) return;
       const wasDrag = pending.started;
+      const kind = pending.kind;
       const file = pending.file;
       clearPending();
       if (wasDrag) onDragEnd(ev);
-      else selectFlower(file); // a tap selects (drag handled its own drop)
+      else if (kind === "palette") selectFlower(file); // tap a palette flower = select
+      // a tap on a placed flower (no drag) does nothing
     }
 
     function onPendingCancel() {
       if (!pending) return;
-      if (pending.started) endDrag();
+      if (pending.started) {
+        if (drag && drag.isMove) setPlacementHidden(drag.sourceHook, false); // restore
+        endDrag();
+      }
       clearPending();
     }
 
@@ -998,14 +1053,16 @@
       window.removeEventListener("pointercancel", onPendingCancel);
     }
 
-    function beginDrag(file, ev) {
+    function beginDrag(p) {
+      const isMove = p.kind === "placed";
+      if (isMove) setPlacementHidden(p.sourceHook, true); // lift it off the ring
       const ghost = document.createElement("img");
       ghost.className = "ghost";
-      ghost.src = "flowers/" + file;
+      ghost.src = "flowers/" + p.file;
       ghost.style.width = stageEl.clientWidth * 0.26 + "px";
       document.body.appendChild(ghost);
-      drag = { file, ghost };
-      moveGhost(ev.clientX, ev.clientY);
+      drag = { file: p.file, ghost, isMove, sourceHook: p.sourceHook };
+      moveGhost(p.x, p.y);
     }
 
     function moveGhost(x, y) {
@@ -1017,12 +1074,18 @@
     function onDragMove(ev) {
       if (!drag) return;
       moveGhost(ev.clientX, ev.clientY);
-      setActiveHook(hookAtPointer(ev.clientX, ev.clientY));
+      const hook = hookAtPointer(ev.clientX, ev.clientY);
+      setActiveHook(hook);
+      // When moving a placed flower, dim the ghost over the remove zone (off-ring).
+      if (drag.isMove) drag.ghost.classList.toggle("ghost--remove", hook == null);
     }
 
     function onDragEnd(ev) {
       if (!drag) return;
       const hook = hookAtPointer(ev.clientX, ev.clientY);
+      // Moving: drop the old placement first, then re-place (or leave it removed
+      // if released off the ring). Placing from the palette: just place.
+      if (drag.isMove) removePlacement(drag.sourceHook);
       if (hook != null) placeFlower(hook, drag.file);
       endDrag();
     }
