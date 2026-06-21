@@ -40,7 +40,7 @@
       --body: "EB Garamond", Georgia, serif;
 
       /* crown scales with viewport height so it shares one screen */
-      --stage-max: clamp(180px, 32vh, 330px);
+      --stage-max: clamp(210px, 38vh, 390px);
       --radius: 6px;
 
       /* placed flower diameter as a share of the stage, tuned so 24 sit
@@ -76,7 +76,7 @@
     }
 
     /* ---- Masthead ---- */
-    .masthead { text-align: center; margin-bottom: clamp(0.5rem, 1.6vh, 1.1rem); }
+    .masthead { text-align: center; margin-bottom: clamp(1.5rem, 4vh, 3rem); }
 
     .masthead .eyebrow {
       font-family: var(--body);
@@ -132,7 +132,7 @@
       display: flex;
       flex-direction: column;
       align-items: center;
-      gap: clamp(0.6rem, 1.8vh, 1.4rem);
+      gap: clamp(2rem, 6vh, 4rem);
     }
 
     /* ---- Crown stage: the hero ---- */
@@ -261,6 +261,45 @@
     }
     .crown-clear:hover { color: var(--parchment); }
     .crown-clear:focus-visible { outline: 2px solid var(--brass-bright); outline-offset: 3px; }
+
+    /* ---- Scroll cue: a quiet drifting chevron hinting at more below ---- */
+    .scroll-cue {
+      position: fixed;
+      left: 50%;
+      bottom: clamp(0.75rem, 2.5vh, 1.5rem);
+      transform: translateX(-50%);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 0.35rem;
+      color: var(--brass);
+      pointer-events: none;
+      z-index: 1500;
+      opacity: 0.75;
+      transition: opacity 0.6s ease;
+    }
+    .scroll-cue__label {
+      font-family: var(--body);
+      font-style: italic;
+      font-size: 0.78rem;
+      letter-spacing: 0.04em;
+      color: var(--dusk-sage);
+    }
+    .scroll-cue svg {
+      width: 22px;
+      height: 22px;
+      animation: cue-drift 2.2s ease-in-out infinite;
+    }
+    .scroll-cue.is-hidden { opacity: 0; }
+    .scroll-cue--fits { display: none; }
+
+    @keyframes cue-drift {
+      0%, 100% { transform: translateY(0); opacity: 0.55; }
+      50% { transform: translateY(5px); opacity: 1; }
+    }
+    @media (prefers-reduced-motion: reduce) {
+      .scroll-cue svg { animation: none; }
+    }
 
     /* ---- Control strip: slim, minimal, centred ---- */
     .controls {
@@ -409,6 +448,14 @@
       <section class="press" aria-label="Flowers">
         <div class="palette" id="palette"></div>
       </section>
+    </div>
+
+    <div class="scroll-cue" id="scroll-cue" aria-hidden="true">
+      <span class="scroll-cue__label">more blooms below</span>
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"
+           stroke-linecap="round" stroke-linejoin="round">
+        <path d="M5 9l7 7 7-7" />
+      </svg>
     </div>
   </main>
 
@@ -607,8 +654,8 @@
     }
 
     // Spiral z-order: highest at 6:30 (hook 13), stepping down clockwise to the
-    // lowest at 5:30 (hook 11). Step of 2 leaves room for the split flower's two
-    // halves to slot in at 99 (just under 6:30) and 57 (just over 5:30).
+    // lowest at 5:30 (hook 11). The 6:00 flower's two halves sit outside this
+    // range entirely (bloom on top of all, stem beneath all) to bridge the seam.
     function zForHook(index) {
       const k = (index - (SPLIT_HOOK + 1) + HOOK_COUNT) % HOOK_COUNT; // 0 at 6:30
       return 100 - 2 * k;
@@ -639,9 +686,10 @@
       let els = placements[index];
       if (!els) {
         if (index === SPLIT_HOOK) {
-          // bloom half just below 6:30 (z 99), stem half just above 5:30 (z 57)
-          const stem = makePlaced(h, index, "placed--stem", 57);
-          const bloom = makePlaced(h, index, "placed--bloom", 99);
+          // The 6:00 flower bridges the seam at the extremes of the stack:
+          // its bloom half sits on top of everything, its stem half under everything.
+          const stem = makePlaced(h, index, "placed--stem", 0);
+          const bloom = makePlaced(h, index, "placed--bloom", 999);
           placedLayer.append(stem, bloom);
           els = [stem, bloom];
         } else {
@@ -747,6 +795,27 @@
       if (i != null && hookEls[i]) hookEls[i].classList.add("hook--active");
     }
 
+    // ---- Scroll cue: fade away once the user starts scrolling ---------------
+    const scrollCue = document.getElementById("scroll-cue");
+    function dismissScrollCue() {
+      scrollCue.classList.add("is-hidden");
+      window.removeEventListener("scroll", onScrollOnce);
+    }
+    function onScrollOnce() {
+      if (window.scrollY > 12) dismissScrollCue();
+    }
+    window.addEventListener("scroll", onScrollOnce, { passive: true });
+
+    // Only show the cue when there is actually something to scroll to. Checked
+    // after load (and on resize) so flower images have contributed their height.
+    function evaluateScrollCueFit() {
+      if (scrollCue.classList.contains("is-hidden")) return;
+      const fits = document.documentElement.scrollHeight <= window.innerHeight + 4;
+      scrollCue.classList.toggle("scroll-cue--fits", fits);
+    }
+    window.addEventListener("load", evaluateScrollCueFit);
+    window.addEventListener("resize", evaluateScrollCueFit);
+
     // ---- Init ---------------------------------------------------------------
     // buildBackdropChoices() is intentionally not called yet - the backdrop
     // selector returns at the save step. The function and BACKDROPS stay in place.
@@ -757,6 +826,7 @@
     applyWreath();
     refreshCrownUI();
     clearBtn.addEventListener("click", clearCrown);
+    evaluateScrollCueFit();
   </script>
 </body>
 </html>
