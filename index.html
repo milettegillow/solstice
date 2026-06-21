@@ -41,6 +41,10 @@
       /* crown scales with viewport height so it shares one screen */
       --stage-max: clamp(180px, 32vh, 330px);
       --radius: 6px;
+
+      /* placed flower diameter as a share of the stage, tuned so 24 sit
+         shoulder to shoulder and slightly overlap around the ring */
+      --placed-size: 26%;
     }
 
     * { box-sizing: border-box; }
@@ -179,6 +183,72 @@
       text-align: center;
     }
 
+    /* ---- Hooks: 24 subtle anchor points around the foliage band ---- */
+    .hooks { position: absolute; inset: 0; pointer-events: none; z-index: 1; }
+    .hook {
+      position: absolute;
+      width: 9px;
+      height: 9px;
+      transform: translate(-50%, -50%);
+      border-radius: 50%;
+      background: rgba(239, 229, 207, 0.14);
+      box-shadow: 0 0 0 1px rgba(0, 0, 0, 0.12);
+      transition: background 0.2s ease, box-shadow 0.25s ease,
+        width 0.15s ease, height 0.15s ease;
+    }
+    /* glow when a flower is dragged over this hook */
+    .hook--active {
+      width: 17px;
+      height: 17px;
+      background: var(--brass-bright);
+      box-shadow: 0 0 14px 5px rgba(200, 166, 98, 0.55);
+    }
+
+    /* ---- Placed flowers ---- */
+    .placed-layer { position: absolute; inset: 0; pointer-events: none; z-index: 2; }
+    .placed {
+      position: absolute;
+      width: var(--placed-size);
+      aspect-ratio: 1 / 1;
+      /* centred on its hook, rotated tangent to the ring */
+      transform: translate(-50%, -50%) rotate(var(--rot, 0deg));
+    }
+    .placed img {
+      width: 100%;
+      height: 100%;
+      object-fit: contain;
+      display: block;
+      filter: drop-shadow(0 3px 6px rgba(0, 0, 0, 0.4));
+    }
+
+    /* ---- Drag ghost following the cursor ---- */
+    .ghost {
+      position: fixed;
+      left: 0;
+      top: 0;
+      transform: translate(-50%, -50%);
+      aspect-ratio: 1 / 1;
+      pointer-events: none;
+      z-index: 2000;
+      opacity: 0.8;
+      filter: drop-shadow(0 6px 12px rgba(0, 0, 0, 0.5));
+    }
+
+    /* ---- Clear control: small, quiet, near the crown ---- */
+    .crown-clear {
+      margin-top: 0.7rem;
+      font-family: var(--body);
+      font-size: 0.85rem;
+      letter-spacing: 0.06em;
+      color: var(--dusk-sage);
+      background: none;
+      border: 0;
+      cursor: pointer;
+      transition: color 0.2s ease;
+    }
+    .crown-clear:hover { color: var(--parchment); }
+    .crown-clear:focus-visible { outline: 2px solid var(--brass-bright); outline-offset: 3px; }
+
     /* ---- Control strip: slim, minimal, centred ---- */
     .controls {
       display: flex;
@@ -250,7 +320,11 @@
       margin: 0 auto 0.15rem;
       filter: drop-shadow(0 5px 12px rgba(0, 0, 0, 0.45));
       transition: transform 0.25s ease;
+      cursor: grab;
+      -webkit-user-drag: none;
+      user-select: none;
     }
+    .bloom__img:active { cursor: grabbing; }
     .bloom:hover .bloom__img { transform: translateY(-4px) scale(1.03); }
 
     .bloom__name {
@@ -308,9 +382,13 @@
           <div class="stage" id="stage">
             <img class="stage__backdrop" id="backdrop" alt="" />
             <img class="stage__wreath" id="wreath" alt="Greenery wreath base" />
+            <div class="hooks" id="hooks" aria-hidden="true"></div>
+            <div class="placed-layer" id="placed-layer"></div>
           </div>
           <div class="wreath-choices" id="wreath-choices" role="group" aria-label="Greenery base"></div>
         </div>
+        <p class="stage__caption" id="stage-hint">Drag a flower onto the ring to begin.</p>
+        <button type="button" class="crown-clear" id="crown-clear" hidden>Clear crown</button>
       </section>
 
       <!-- The flower press -->
@@ -454,6 +532,8 @@
         img.src = "flowers/" + f.file;
         img.alt = f.name;
         img.loading = "lazy";
+        img.draggable = false;
+        img.addEventListener("pointerdown", (ev) => startDrag(f.file, ev));
 
         const caption = document.createElement("figcaption");
         const name = document.createElement("span");
@@ -471,13 +551,163 @@
       });
     }
 
+    // ---- Weaving the crown --------------------------------------------------
+    // Geometry constants, kept easy to tune per wreath art.
+    const HOOK_COUNT = 24;        // evenly spaced anchor points
+    const RING_RADIUS_PCT = 38;   // hook circle radius, % of stage width from centre
+
+    const stageEl = document.getElementById("stage");
+    const hooksLayer = document.getElementById("hooks");
+    const placedLayer = document.getElementById("placed-layer");
+    const hintEl = document.getElementById("stage-hint");
+    const clearBtn = document.getElementById("crown-clear");
+
+    // HOOKS holds the geometry; placements[i] is the placed <div> at hook i (or null).
+    const HOOKS = [];
+    const hookEls = [];
+    const placements = new Array(HOOK_COUNT).fill(null);
+
+    function buildHooks() {
+      const r = RING_RADIUS_PCT / 100;
+      for (let i = 0; i < HOOK_COUNT; i++) {
+        const angleDeg = i * (360 / HOOK_COUNT);
+        const a = (angleDeg * Math.PI) / 180;
+        // angle measured from the top, going clockwise
+        const xFrac = 0.5 + r * Math.sin(a);
+        const yFrac = 0.5 - r * Math.cos(a);
+        HOOKS.push({ index: i, angleDeg, xFrac, yFrac });
+
+        const dot = document.createElement("div");
+        dot.className = "hook";
+        dot.dataset.hook = i;
+        dot.style.left = (xFrac * 100) + "%";
+        dot.style.top = (yFrac * 100) + "%";
+        hooksLayer.appendChild(dot);
+        hookEls[i] = dot;
+      }
+    }
+
+    // Place (or replace) a flower on a hook, centred and rotated tangent to the ring.
+    function placeFlower(index, file) {
+      const h = HOOKS[index];
+      let el = placements[index];
+      if (!el) {
+        el = document.createElement("div");
+        el.className = "placed";
+        el.dataset.hook = index;
+        el.style.left = (h.xFrac * 100) + "%";
+        el.style.top = (h.yFrac * 100) + "%";
+        el.style.setProperty("--rot", h.angleDeg + "deg");
+        // z-index climbs clockwise so each flower overlaps its neighbour, woven
+        el.style.zIndex = index + 1;
+        const img = document.createElement("img");
+        img.alt = "";
+        el.appendChild(img);
+        placedLayer.appendChild(el);
+        placements[index] = el;
+      }
+      el.dataset.file = file;
+      el.querySelector("img").src = "flowers/" + file;
+      refreshCrownUI();
+    }
+
+    function clearCrown() {
+      placements.forEach((el) => { if (el) el.remove(); });
+      placements.fill(null);
+      refreshCrownUI();
+    }
+
+    function refreshCrownUI() {
+      const count = placements.filter(Boolean).length;
+      hintEl.hidden = count > 0;
+      clearBtn.hidden = count === 0;
+    }
+
+    // ---- Custom pointer drag (desktop) --------------------------------------
+    // Reused for mobile tap and for moving placed flowers in the next commit.
+    let drag = null;
+    let activeHook = null;
+
+    function startDrag(file, ev) {
+      // Touch gets a dedicated tap flow in the next commit; desktop drag only here.
+      if (ev.pointerType === "touch") return;
+      ev.preventDefault();
+
+      const ghost = document.createElement("img");
+      ghost.className = "ghost";
+      ghost.src = "flowers/" + file;
+      ghost.style.width = stageEl.clientWidth * 0.26 + "px";
+      document.body.appendChild(ghost);
+
+      drag = { file, ghost };
+      moveGhost(ev.clientX, ev.clientY);
+
+      window.addEventListener("pointermove", onDragMove);
+      window.addEventListener("pointerup", onDragEnd);
+      window.addEventListener("pointercancel", onDragEnd);
+    }
+
+    function moveGhost(x, y) {
+      if (!drag) return;
+      drag.ghost.style.left = x + "px";
+      drag.ghost.style.top = y + "px";
+    }
+
+    function onDragMove(ev) {
+      if (!drag) return;
+      moveGhost(ev.clientX, ev.clientY);
+      setActiveHook(hookAtPointer(ev.clientX, ev.clientY));
+    }
+
+    function onDragEnd(ev) {
+      if (!drag) return;
+      const hook = hookAtPointer(ev.clientX, ev.clientY);
+      if (hook != null) placeFlower(hook, drag.file);
+      endDrag();
+    }
+
+    function endDrag() {
+      if (drag && drag.ghost) drag.ghost.remove();
+      drag = null;
+      setActiveHook(null);
+      window.removeEventListener("pointermove", onDragMove);
+      window.removeEventListener("pointerup", onDragEnd);
+      window.removeEventListener("pointercancel", onDragEnd);
+    }
+
+    // Nearest hook to a screen point, or null when the pointer is away from the ring.
+    function hookAtPointer(cx, cy) {
+      const r = stageEl.getBoundingClientRect();
+      const margin = r.width * 0.15;
+      if (cx < r.left - margin || cx > r.right + margin ||
+          cy < r.top - margin || cy > r.bottom + margin) return null;
+      let best = null, bestD = Infinity;
+      for (const h of HOOKS) {
+        const hx = r.left + h.xFrac * r.width;
+        const hy = r.top + h.yFrac * r.height;
+        const d = (hx - cx) ** 2 + (hy - cy) ** 2;
+        if (d < bestD) { bestD = d; best = h.index; }
+      }
+      return best;
+    }
+
+    function setActiveHook(i) {
+      if (activeHook === i) return;
+      if (activeHook != null && hookEls[activeHook]) hookEls[activeHook].classList.remove("hook--active");
+      activeHook = i;
+      if (i != null && hookEls[i]) hookEls[i].classList.add("hook--active");
+    }
+
     // ---- Init ---------------------------------------------------------------
     // buildBackdropChoices() is intentionally not called yet - the backdrop
     // selector returns at the save step. The function and BACKDROPS stay in place.
     buildWreathChoices();
     buildPalette();
+    buildHooks();
     applyBackdrop();
     applyWreath();
+    refreshCrownUI();
+    clearBtn.addEventListener("click", clearCrown);
   </script>
 </body>
 </html>
