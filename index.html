@@ -129,6 +129,14 @@
     /* ---- Crown stage: the hero ---- */
     .stage-wrap { display: flex; flex-direction: column; align-items: center; width: 100%; }
 
+    /* wreath sits centred with its selector stacked to the right */
+    .stage-row {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: clamp(0.6rem, 2vw, 1.1rem);
+    }
+
     /* Plain stage: no panel, border or background - the wreath sits directly
        on the page. (Backdrop framing returns later, at the save step.) */
     .stage {
@@ -175,8 +183,13 @@
       gap: 0.6rem;
     }
 
-    /* wreath choices: three compact circular thumbnails */
-    .wreath-choices { display: flex; gap: 0.55rem; justify-content: center; }
+    /* wreath choices: three compact circular thumbnails, stacked vertically */
+    .wreath-choices {
+      display: flex;
+      flex-direction: column;
+      gap: 0.55rem;
+      justify-content: center;
+    }
     .wreath-choice {
       width: 44px;
       height: 44px;
@@ -208,14 +221,17 @@
       margin: 0 0 clamp(0.5rem, 1.4vh, 1rem);
     }
 
-    /* 5 across, 3 rows of the manifest, packed tight */
+    /* Two rows: 7 blooms above, 8 below. A 56-column grid (LCM of 7 and 8)
+       lets the top seven span 8 each and the bottom eight span 7 each. */
     .palette {
       display: grid;
-      grid-template-columns: repeat(5, 1fr);
+      grid-template-columns: repeat(56, 1fr);
       gap: clamp(0.3rem, 1.2vh, 0.8rem) clamp(0.4rem, 1.5vw, 1rem);
     }
 
     .bloom { text-align: center; }
+    .bloom:nth-child(-n + 7) { grid-column: span 8; }
+    .bloom:nth-child(n + 8) { grid-column: span 7; }
 
     .bloom__img {
       width: 100%;
@@ -257,6 +273,7 @@
     /* ---- Responsive: let it breathe and scroll on smaller screens ---- */
     @media (max-width: 720px) {
       .palette { grid-template-columns: repeat(3, 1fr); }
+      .bloom:nth-child(-n + 7), .bloom:nth-child(n + 8) { grid-column: auto; }
       .bloom__img { max-width: 130px; }
     }
     @media (max-width: 440px) {
@@ -274,28 +291,23 @@
     <header class="masthead">
       <p class="eyebrow">Summer Solstice</p>
       <h1>The Solstice Crown</h1>
-      <p class="subtitle">Weave a flower crown for midsummer, one bloom at a time.</p>
       <hr class="rule" />
     </header>
 
     <div class="studio">
-      <!-- Crown stage: the hero -->
+      <!-- Crown stage: the hero, with the wreath selector stacked to its right -->
       <section class="stage-wrap" aria-label="Your flower crown">
-        <div class="stage" id="stage">
-          <img class="stage__backdrop" id="backdrop" alt="" />
-          <img class="stage__wreath" id="wreath" alt="Greenery wreath base" />
+        <div class="stage-row">
+          <div class="stage" id="stage">
+            <img class="stage__backdrop" id="backdrop" alt="" />
+            <img class="stage__wreath" id="wreath" alt="Greenery wreath base" />
+          </div>
+          <div class="wreath-choices" id="wreath-choices" role="group" aria-label="Greenery base"></div>
         </div>
-        <p class="stage__caption">Your crown takes shape here.</p>
       </section>
 
-      <!-- Slim control strip -->
-      <div class="controls">
-        <div class="wreath-choices" id="wreath-choices" role="group" aria-label="Greenery base"></div>
-      </div>
-
       <!-- The flower press -->
-      <section class="press" aria-labelledby="palette-title">
-        <h2 class="press__title" id="palette-title">The flower press</h2>
+      <section class="press" aria-label="Flowers">
         <div class="palette" id="palette"></div>
       </section>
     </div>
