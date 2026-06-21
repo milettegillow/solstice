@@ -1,0 +1,533 @@
+<!DOCTYPE html>
+<html lang="en-GB">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Solstice Crown - weave a flower crown for midsummer</title>
+  <meta name="description" content="Weave a flower crown for the summer solstice. A quiet little green-witch ritual." />
+
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,500;0,600;1,400&family=EB+Garamond:ital,wght@0,400;0,500;1,400&display=swap" rel="stylesheet" />
+
+  <style>
+    :root {
+      /* deep forest and moss */
+      --forest-deep: #16201a;
+      --forest: #1f2d23;
+      --moss-dark: #34442f;
+      --moss: #4f6240;
+      --moss-soft: #6f8156;
+
+      /* parchment and cream */
+      --parchment: #efe5cf;
+      --parchment-dim: #e3d6ba;
+      --cream: #f6efdd;
+
+      /* muted brass-gold accent */
+      --brass: #b08d4f;
+      --brass-bright: #c8a662;
+      --brass-dim: #8a6f3e;
+
+      /* dusky botanical tones */
+      --dusk-plum: #5b4a55;
+      --dusk-sage: #7d8a6e;
+
+      --ink: #2a2f25;
+
+      --display: "Playfair Display", Georgia, serif;
+      --body: "EB Garamond", Georgia, serif;
+
+      --stage-max: 640px;
+      --radius: 6px;
+    }
+
+    * { box-sizing: border-box; }
+
+    html, body { margin: 0; padding: 0; }
+
+    body {
+      font-family: var(--body);
+      color: var(--parchment);
+      background-color: var(--forest-deep);
+      background-image:
+        radial-gradient(120% 90% at 50% -10%, rgba(79, 98, 64, 0.35), transparent 60%),
+        radial-gradient(100% 120% at 50% 120%, rgba(22, 32, 26, 0.9), transparent 55%);
+      min-height: 100vh;
+      font-size: 18px;
+      line-height: 1.55;
+      -webkit-font-smoothing: antialiased;
+    }
+
+    .page {
+      max-width: 1100px;
+      margin: 0 auto;
+      padding: clamp(1.5rem, 4vw, 3.5rem) clamp(1rem, 4vw, 2.5rem) 4rem;
+    }
+
+    /* ---- Masthead ---- */
+    .masthead { text-align: center; margin-bottom: clamp(1.5rem, 4vw, 3rem); }
+
+    .masthead .eyebrow {
+      font-family: var(--body);
+      letter-spacing: 0.42em;
+      text-transform: uppercase;
+      font-size: 0.72rem;
+      color: var(--brass-bright);
+      margin: 0 0 0.9rem;
+      padding-left: 0.42em;
+    }
+
+    .masthead h1 {
+      font-family: var(--display);
+      font-weight: 500;
+      font-size: clamp(2.4rem, 7vw, 4rem);
+      line-height: 1.04;
+      margin: 0;
+      color: var(--cream);
+      text-shadow: 0 1px 0 rgba(0, 0, 0, 0.35);
+    }
+
+    .masthead .subtitle {
+      font-style: italic;
+      font-size: clamp(1.05rem, 2.5vw, 1.3rem);
+      color: var(--parchment-dim);
+      margin: 0.7rem auto 0;
+      max-width: 34ch;
+    }
+
+    .rule {
+      width: 120px;
+      height: 1px;
+      margin: 1.4rem auto 0;
+      border: 0;
+      background: linear-gradient(90deg, transparent, var(--brass), transparent);
+      position: relative;
+    }
+    .rule::after {
+      content: "\2766";
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      color: var(--brass-bright);
+      font-size: 1rem;
+      background: var(--forest-deep);
+      padding: 0 0.5rem;
+      line-height: 1;
+    }
+
+    /* ---- Layout ---- */
+    .studio {
+      display: grid;
+      grid-template-columns: minmax(0, 1fr);
+      gap: clamp(1.5rem, 4vw, 2.5rem);
+      align-items: start;
+    }
+
+    /* ---- Crown stage ---- */
+    .stage-wrap { display: flex; flex-direction: column; align-items: center; }
+
+    .stage {
+      position: relative;
+      width: min(100%, var(--stage-max));
+      aspect-ratio: 1 / 1;
+      border-radius: var(--radius);
+      overflow: hidden;
+      background-color: var(--forest);
+      box-shadow:
+        inset 0 0 0 1px rgba(176, 141, 79, 0.35),
+        0 18px 40px -18px rgba(0, 0, 0, 0.8);
+    }
+
+    /* faint vignette so a transparent backdrop still feels seated */
+    .stage::after {
+      content: "";
+      position: absolute;
+      inset: 0;
+      pointer-events: none;
+      box-shadow: inset 0 0 80px 10px rgba(0, 0, 0, 0.35);
+      border-radius: var(--radius);
+    }
+
+    .stage__backdrop {
+      position: absolute;
+      inset: 0;
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      transition: opacity 0.5s ease;
+    }
+    .stage__backdrop[hidden] { display: none; }
+
+    .stage__wreath {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      width: 92%;
+      height: 92%;
+      transform: translate(-50%, -50%);
+      object-fit: contain;
+      filter: drop-shadow(0 6px 14px rgba(0, 0, 0, 0.45));
+      pointer-events: none;
+    }
+
+    .stage__caption {
+      margin: 1rem 0 0;
+      font-style: italic;
+      font-size: 0.95rem;
+      color: var(--parchment-dim);
+      text-align: center;
+    }
+
+    /* ---- Controls ---- */
+    .controls {
+      display: grid;
+      gap: clamp(1.5rem, 4vw, 2.25rem);
+    }
+
+    .panel {
+      background:
+        linear-gradient(180deg, rgba(246, 239, 221, 0.04), rgba(0, 0, 0, 0.06)),
+        var(--forest);
+      border: 1px solid rgba(176, 141, 79, 0.3);
+      border-radius: var(--radius);
+      padding: clamp(1.1rem, 3vw, 1.6rem);
+    }
+
+    .panel__title {
+      font-family: var(--display);
+      font-weight: 500;
+      font-size: 1.3rem;
+      color: var(--cream);
+      margin: 0 0 0.2rem;
+    }
+    .panel__note {
+      font-size: 0.92rem;
+      font-style: italic;
+      color: var(--dusk-sage);
+      margin: 0 0 1rem;
+    }
+
+    /* segmented choice buttons */
+    .choices { display: flex; flex-wrap: wrap; gap: 0.6rem; }
+
+    .choice {
+      font-family: var(--body);
+      font-size: 1rem;
+      color: var(--parchment);
+      background: rgba(22, 32, 26, 0.6);
+      border: 1px solid rgba(176, 141, 79, 0.35);
+      border-radius: var(--radius);
+      padding: 0.55rem 1.1rem;
+      cursor: pointer;
+      transition: border-color 0.25s ease, background 0.25s ease, color 0.25s ease;
+      letter-spacing: 0.02em;
+    }
+    .choice:hover { border-color: var(--brass-bright); color: var(--cream); }
+    .choice:focus-visible {
+      outline: 2px solid var(--brass-bright);
+      outline-offset: 2px;
+    }
+    .choice[aria-pressed="true"] {
+      background: var(--brass);
+      border-color: var(--brass-bright);
+      color: var(--forest-deep);
+      font-weight: 500;
+    }
+
+    /* wreath choices as little thumbnails */
+    .wreath-choices { display: flex; flex-wrap: wrap; gap: 0.75rem; }
+    .wreath-choice {
+      width: 78px;
+      height: 78px;
+      padding: 6px;
+      background: rgba(22, 32, 26, 0.6);
+      border: 1px solid rgba(176, 141, 79, 0.35);
+      border-radius: 50%;
+      cursor: pointer;
+      transition: border-color 0.25s ease, transform 0.2s ease;
+    }
+    .wreath-choice:hover { border-color: var(--brass-bright); transform: scale(1.04); }
+    .wreath-choice:focus-visible { outline: 2px solid var(--brass-bright); outline-offset: 2px; }
+    .wreath-choice[aria-pressed="true"] {
+      border-color: var(--brass-bright);
+      box-shadow: 0 0 0 2px rgba(200, 166, 98, 0.4);
+    }
+    .wreath-choice img { width: 100%; height: 100%; object-fit: contain; display: block; }
+
+    /* ---- Flower palette ---- */
+    .palette {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(118px, 1fr));
+      gap: clamp(0.75rem, 2vw, 1.1rem);
+    }
+
+    .bloom {
+      background: rgba(22, 32, 26, 0.45);
+      border: 1px solid rgba(176, 141, 79, 0.22);
+      border-radius: var(--radius);
+      padding: 0.6rem 0.5rem 0.7rem;
+      text-align: center;
+      transition: border-color 0.25s ease, background 0.25s ease, transform 0.2s ease;
+    }
+    .bloom:hover {
+      border-color: rgba(200, 166, 98, 0.6);
+      background: rgba(34, 48, 38, 0.6);
+      transform: translateY(-2px);
+    }
+
+    .bloom__img {
+      width: 100%;
+      aspect-ratio: 1 / 1;
+      object-fit: contain;
+      display: block;
+      margin: 0 auto 0.4rem;
+      filter: drop-shadow(0 4px 8px rgba(0, 0, 0, 0.4));
+    }
+
+    .bloom__name {
+      font-family: var(--display);
+      font-size: 1rem;
+      color: var(--cream);
+      line-height: 1.1;
+      text-transform: capitalize;
+    }
+    .bloom__meaning {
+      display: block;
+      font-size: 0.78rem;
+      font-style: italic;
+      color: var(--dusk-sage);
+      line-height: 1.25;
+      margin-top: 0.15rem;
+    }
+
+    /* ---- Footer ---- */
+    .colophon {
+      text-align: center;
+      margin-top: 3rem;
+      font-size: 0.85rem;
+      font-style: italic;
+      color: var(--moss-soft);
+    }
+
+    /* ---- Responsive: two columns on wider screens ---- */
+    @media (min-width: 900px) {
+      .studio {
+        grid-template-columns: minmax(0, 1.05fr) minmax(0, 0.95fr);
+      }
+      .stage-wrap { position: sticky; top: 1.5rem; }
+    }
+
+    /* On narrow screens keep the palette tidy: it wraps by default,
+       and we cap its height so it scrolls rather than pushing the page. */
+    @media (max-width: 560px) {
+      body { font-size: 17px; }
+      .palette {
+        grid-template-columns: repeat(auto-fill, minmax(96px, 1fr));
+        max-height: 60vh;
+        overflow-y: auto;
+        padding-right: 0.25rem;
+      }
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      * { transition: none !important; }
+    }
+  </style>
+</head>
+<body>
+  <main class="page">
+    <header class="masthead">
+      <p class="eyebrow">Summer Solstice</p>
+      <h1>The Solstice Crown</h1>
+      <p class="subtitle">Weave a flower crown for midsummer, one bloom at a time.</p>
+      <hr class="rule" />
+    </header>
+
+    <div class="studio">
+      <!-- Crown stage -->
+      <section class="stage-wrap" aria-label="Your flower crown">
+        <div class="stage" id="stage">
+          <img class="stage__backdrop" id="backdrop" alt="" />
+          <img class="stage__wreath" id="wreath" alt="Greenery wreath base" />
+        </div>
+        <p class="stage__caption">Your crown takes shape here.</p>
+      </section>
+
+      <!-- Controls -->
+      <div class="controls">
+        <section class="panel" aria-labelledby="backdrop-title">
+          <h2 class="panel__title" id="backdrop-title">Backdrop</h2>
+          <p class="panel__note">Choose where to rest your crown.</p>
+          <div class="choices" id="backdrop-choices" role="group" aria-label="Backdrop"></div>
+        </section>
+
+        <section class="panel" aria-labelledby="wreath-title">
+          <h2 class="panel__title" id="wreath-title">Greenery base</h2>
+          <p class="panel__note">Pick the ring of leaves to build upon.</p>
+          <div class="wreath-choices" id="wreath-choices" role="group" aria-label="Greenery base"></div>
+        </section>
+
+        <section class="panel" aria-labelledby="palette-title">
+          <h2 class="panel__title" id="palette-title">The flower press</h2>
+          <p class="panel__note">
+            Fifteen blooms and sprigs, each with its old meaning from the language of flowers - folklore to weave in as you please.
+          </p>
+          <div class="palette" id="palette"></div>
+        </section>
+      </div>
+    </div>
+
+    <p class="colophon">Made for the longest day. Meanings drawn from the language of flowers and country folklore.</p>
+  </main>
+
+  <script>
+    // ---- Flower manifest ----------------------------------------------------
+    // Each entry: { file, name, meaning }. Add to this array to extend the press.
+    const FLOWERS = [
+      { file: "rose.png",         name: "rose",         meaning: "love" },
+      { file: "sunflower.png",    name: "sunflower",    meaning: "adoration and loyalty" },
+      { file: "chrysanthemum.png",name: "chrysanthemum",meaning: "joy and long life" },
+      { file: "lavender.png",     name: "lavender",     meaning: "serenity and devotion" },
+      { file: "carnation.png",    name: "carnation",    meaning: "devoted love" },
+      { file: "sweetpea.png",     name: "sweet pea",    meaning: "blissful pleasure and gratitude" },
+      { file: "foxglove.png",     name: "foxglove",     meaning: "fairy magic" },
+      { file: "chamomile.png",    name: "chamomile",    meaning: "patience and calm" },
+      { file: "bluebell.png",     name: "bluebell",     meaning: "constancy and fairy enchantment" },
+      { file: "honeysuckle.png",  name: "honeysuckle",  meaning: "devoted affection" },
+      { file: "eucalyptus.png",   name: "eucalyptus",   meaning: "protection and clarity" },
+      { file: "fern.png",         name: "fern",         meaning: "sincerity and magic" },
+      { file: "ivy.png",          name: "ivy",          meaning: "fidelity" },
+      { file: "rosemary.png",     name: "rosemary",     meaning: "remembrance and loyalty" },
+      { file: "myrtle.png",       name: "myrtle",       meaning: "love and lasting union" },
+    ];
+
+    // ---- Backdrops and wreaths ----------------------------------------------
+    const BACKDROPS = [
+      { id: "moss",        label: "Moss",        src: "backgrounds/moss.png" },
+      { id: "bark",        label: "Bark",        src: "backgrounds/bark.png" },
+      { id: "transparent", label: "Transparent", src: null },
+    ];
+
+    const WREATHS = [
+      { id: "wreath-1", src: "wreaths/wreath-1.png" },
+      { id: "wreath-2", src: "wreaths/wreath-2.png" },
+      { id: "wreath-3", src: "wreaths/wreath-3.png" },
+    ];
+
+    // ---- State --------------------------------------------------------------
+    const state = {
+      backdrop: BACKDROPS[0].id,
+      wreath: WREATHS[0].id,
+    };
+
+    const backdropImg = document.getElementById("backdrop");
+    const wreathImg = document.getElementById("wreath");
+
+    function applyBackdrop() {
+      const choice = BACKDROPS.find((b) => b.id === state.backdrop);
+      if (!choice || !choice.src) {
+        backdropImg.removeAttribute("src");
+        backdropImg.hidden = true;
+        backdropImg.alt = "";
+      } else {
+        backdropImg.hidden = false;
+        backdropImg.src = choice.src;
+        backdropImg.alt = choice.label + " backdrop";
+      }
+      syncPressed("backdrop-choices", state.backdrop);
+    }
+
+    function applyWreath() {
+      const choice = WREATHS.find((w) => w.id === state.wreath);
+      if (choice) wreathImg.src = choice.src;
+      syncPressed("wreath-choices", state.wreath);
+    }
+
+    function syncPressed(containerId, activeId) {
+      const container = document.getElementById(containerId);
+      container.querySelectorAll("[data-id]").forEach((el) => {
+        el.setAttribute("aria-pressed", String(el.dataset.id === activeId));
+      });
+    }
+
+    // ---- Build the controls -------------------------------------------------
+    function buildBackdropChoices() {
+      const container = document.getElementById("backdrop-choices");
+      BACKDROPS.forEach((b) => {
+        const btn = document.createElement("button");
+        btn.type = "button";
+        btn.className = "choice";
+        btn.dataset.id = b.id;
+        btn.textContent = b.label;
+        btn.setAttribute("aria-pressed", String(b.id === state.backdrop));
+        btn.addEventListener("click", () => {
+          state.backdrop = b.id;
+          applyBackdrop();
+        });
+        container.appendChild(btn);
+      });
+    }
+
+    function buildWreathChoices() {
+      const container = document.getElementById("wreath-choices");
+      WREATHS.forEach((w, i) => {
+        const btn = document.createElement("button");
+        btn.type = "button";
+        btn.className = "wreath-choice";
+        btn.dataset.id = w.id;
+        btn.setAttribute("aria-pressed", String(w.id === state.wreath));
+        btn.setAttribute("aria-label", "Greenery base " + (i + 1));
+
+        const img = document.createElement("img");
+        img.src = w.src;
+        img.alt = "";
+        btn.appendChild(img);
+
+        btn.addEventListener("click", () => {
+          state.wreath = w.id;
+          applyWreath();
+        });
+        container.appendChild(btn);
+      });
+    }
+
+    function buildPalette() {
+      const palette = document.getElementById("palette");
+      FLOWERS.forEach((f) => {
+        const card = document.createElement("figure");
+        card.className = "bloom";
+        card.dataset.flower = f.file;
+
+        const img = document.createElement("img");
+        img.className = "bloom__img";
+        img.src = "flowers/" + f.file;
+        img.alt = f.name;
+        img.loading = "lazy";
+
+        const caption = document.createElement("figcaption");
+        const name = document.createElement("span");
+        name.className = "bloom__name";
+        name.textContent = f.name;
+        const meaning = document.createElement("span");
+        meaning.className = "bloom__meaning";
+        meaning.textContent = f.meaning;
+
+        caption.appendChild(name);
+        caption.appendChild(meaning);
+        card.appendChild(img);
+        card.appendChild(caption);
+        palette.appendChild(card);
+      });
+    }
+
+    // ---- Init ---------------------------------------------------------------
+    buildBackdropChoices();
+    buildWreathChoices();
+    buildPalette();
+    applyBackdrop();
+    applyWreath();
+  </script>
+</body>
+</html>
