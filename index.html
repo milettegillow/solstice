@@ -91,7 +91,7 @@
     .masthead h1 {
       font-family: var(--display);
       font-weight: 500;
-      font-size: clamp(1.45rem, 3.7vh, 2.3rem);
+      font-size: clamp(1.65rem, 4.2vh, 2.6rem);
       line-height: 1.02;
       margin: 0;
       color: var(--cream);
@@ -293,6 +293,143 @@
     .scroll-cue.is-hidden { opacity: 0; }
     .scroll-cue--fits { display: none; }
 
+    /* ---- Save preview overlay ---- */
+    .preview {
+      position: fixed;
+      inset: 0;
+      z-index: 3000;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: clamp(1rem, 4vw, 2rem);
+      background: rgba(11, 16, 13, 0.82);
+      -webkit-backdrop-filter: blur(3px);
+      backdrop-filter: blur(3px);
+    }
+    .preview[hidden] { display: none; }
+
+    .preview__dialog {
+      position: relative;
+      width: 100%;
+      max-width: min(92vw, 540px);
+      background:
+        linear-gradient(180deg, rgba(246, 239, 221, 0.04), rgba(0, 0, 0, 0.06)),
+        var(--forest);
+      border: 1px solid rgba(176, 141, 79, 0.35);
+      border-radius: 10px;
+      padding: clamp(1.5rem, 4vw, 2.25rem);
+      box-shadow: 0 30px 70px -24px rgba(0, 0, 0, 0.85);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: clamp(1rem, 3vh, 1.6rem);
+    }
+
+    .preview__title {
+      font-family: var(--display);
+      font-weight: 500;
+      font-size: 1.35rem;
+      color: var(--cream);
+      margin: 0;
+    }
+
+    .preview__close {
+      position: absolute;
+      top: 0.55rem;
+      right: 0.7rem;
+      width: 34px;
+      height: 34px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      border: 0;
+      background: none;
+      color: var(--dusk-sage);
+      font-size: 1.4rem;
+      line-height: 1;
+      cursor: pointer;
+      transition: color 0.2s ease;
+    }
+    .preview__close:hover { color: var(--cream); }
+    .preview__close:focus-visible { outline: 2px solid var(--brass-bright); outline-offset: 2px; }
+
+    .preview__stage {
+      position: relative;
+      width: min(74vw, 340px);
+      aspect-ratio: 1 / 1;
+      border-radius: 6px;
+      overflow: hidden;
+      box-shadow: inset 0 0 0 1px rgba(176, 141, 79, 0.25);
+    }
+    .preview__bg {
+      position: absolute;
+      inset: 0;
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
+    .preview__bg[hidden] { display: none; }
+    /* faint checkerboard to show a see-through (transparent) backdrop */
+    .preview__checker {
+      position: absolute;
+      inset: 0;
+      background-color: #20271f;
+      background-image:
+        linear-gradient(45deg, rgba(239, 229, 207, 0.08) 25%, transparent 25%, transparent 75%, rgba(239, 229, 207, 0.08) 75%),
+        linear-gradient(45deg, rgba(239, 229, 207, 0.08) 25%, transparent 25%, transparent 75%, rgba(239, 229, 207, 0.08) 75%);
+      background-size: 22px 22px;
+      background-position: 0 0, 11px 11px;
+    }
+    .preview__checker[hidden] { display: none; }
+    .preview__wreath {
+      position: absolute;
+      inset: 0;
+      width: 100%;
+      height: 100%;
+      object-fit: contain;
+    }
+    .preview__placed { position: absolute; inset: 0; }
+
+    .preview__backdrops {
+      display: flex;
+      align-items: center;
+      gap: 0.45rem;
+      justify-content: center;
+    }
+    .pv-toggle {
+      font-family: var(--body);
+      font-size: 0.98rem;
+      color: var(--dusk-sage);
+      background: none;
+      border: 0;
+      padding: 0.2rem 0.4rem;
+      cursor: pointer;
+      letter-spacing: 0.03em;
+      transition: color 0.2s ease;
+    }
+    .pv-toggle:hover { color: var(--parchment); }
+    .pv-toggle:focus-visible { outline: 2px solid var(--brass-bright); outline-offset: 3px; }
+    .pv-toggle[aria-pressed="true"] {
+      color: var(--brass-bright);
+      border-bottom: 1px solid var(--brass);
+    }
+    .pv-sep { color: var(--moss); user-select: none; }
+
+    .preview__download {
+      font-family: var(--body);
+      font-size: 1rem;
+      letter-spacing: 0.05em;
+      color: var(--forest-deep);
+      background: var(--brass);
+      border: 1px solid var(--brass-bright);
+      border-radius: 6px;
+      padding: 0.55rem 1.6rem;
+      cursor: pointer;
+      transition: background 0.25s ease;
+    }
+    .preview__download:hover { background: var(--brass-bright); }
+    .preview__download:focus-visible { outline: 2px solid var(--cream); outline-offset: 2px; }
+
     @keyframes cue-drift {
       0%, 100% { transform: translateY(0); opacity: 0.55; }
       50% { transform: translateY(5px); opacity: 1; }
@@ -309,17 +446,50 @@
       gap: 0.6rem;
     }
 
-    /* wreath choices: three compact circular thumbnails, stacked vertically,
-       sitting in the right-hand column and nudged further right of the crown */
-    .wreath-choices {
+    /* right-hand rail: wreath thumbnails with the save control beneath them,
+       sitting in the right column and nudged further right of the crown */
+    .right-rail {
       grid-column: 3;
       justify-self: start;
       margin-left: clamp(1rem, 4vw, 3rem);
       display: flex;
       flex-direction: column;
+      align-items: center;
+      gap: 0.9rem;
+    }
+
+    /* wreath choices: three compact circular thumbnails, stacked vertically */
+    .wreath-choices {
+      display: flex;
+      flex-direction: column;
       gap: 0.55rem;
       justify-content: center;
     }
+
+    /* save control: a small, quiet floppy-disc throwback in muted brass */
+    .save-btn {
+      width: 44px;
+      height: 44px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: none;
+      border: 1px solid rgba(176, 141, 79, 0.3);
+      border-radius: 50%;
+      color: var(--brass);
+      cursor: pointer;
+      opacity: 0.72;
+      transition: opacity 0.25s ease, border-color 0.25s ease,
+        color 0.25s ease, transform 0.2s ease;
+    }
+    .save-btn:hover {
+      opacity: 1;
+      border-color: var(--brass-bright);
+      color: var(--cream);
+      transform: scale(1.05);
+    }
+    .save-btn:focus-visible { outline: 2px solid var(--brass-bright); outline-offset: 2px; }
+    .save-btn svg { width: 23px; height: 23px; }
     .wreath-choice {
       width: 44px;
       height: 44px;
@@ -438,7 +608,17 @@
             <div class="hooks" id="hooks" aria-hidden="true"></div>
             <div class="placed-layer" id="placed-layer"></div>
           </div>
-          <div class="wreath-choices" id="wreath-choices" role="group" aria-label="Greenery base"></div>
+          <div class="right-rail">
+            <div class="wreath-choices" id="wreath-choices" role="group" aria-label="Greenery base"></div>
+            <button type="button" class="save-btn" id="save-btn" aria-label="Save your crown" title="Save your crown">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.3"
+                   stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                <path d="M6 4 H16 L20 8 V18.5 A1.5 1.5 0 0 1 18.5 20 H5.5 A1.5 1.5 0 0 1 4 18.5 V6 A2 2 0 0 1 6 4 Z" />
+                <path d="M9 4 V8 H15 V4" />
+                <rect x="8" y="13" width="8" height="5" rx="0.5" />
+              </svg>
+            </button>
+          </div>
         </div>
         <p class="stage__caption" id="stage-hint">Drag a flower onto the ring to begin.</p>
         <button type="button" class="crown-clear" id="crown-clear" hidden>Clear crown</button>
@@ -448,6 +628,21 @@
       <section class="press" aria-label="Flowers">
         <div class="palette" id="palette"></div>
       </section>
+    </div>
+
+    <div class="preview" id="preview" hidden>
+      <div class="preview__dialog" role="dialog" aria-modal="true" aria-labelledby="preview-title">
+        <button type="button" class="preview__close" id="preview-close" aria-label="Close preview">&times;</button>
+        <h2 class="preview__title" id="preview-title">Your crown</h2>
+        <div class="preview__stage" id="preview-stage">
+          <div class="preview__checker" id="preview-checker" hidden></div>
+          <img class="preview__bg" id="preview-bg" alt="" hidden />
+          <img class="preview__wreath" id="preview-wreath" alt="" />
+          <div class="preview__placed" id="preview-placed"></div>
+        </div>
+        <div class="preview__backdrops" id="preview-backdrops" role="group" aria-label="Backdrop"></div>
+        <button type="button" class="preview__download" id="preview-download">Download</button>
+      </div>
     </div>
 
     <div class="scroll-cue" id="scroll-cue" aria-hidden="true">
@@ -616,6 +811,12 @@
     // Geometry constants, kept easy to tune per wreath art.
     const HOOK_COUNT = 24;        // evenly spaced anchor points
     const RING_RADIUS_PCT = 42;   // hook circle radius, % of stage width from centre
+
+    // These mirror the CSS variables and are reused by the canvas export so the
+    // saved PNG matches the screen exactly. Keep in sync with :root.
+    const PLACED_SIZE_RATIO = 0.26;   // --placed-size: 26%
+    const BLOOM_BOTTOM_INSET = 0.44;  // --bloom-bottom-inset: 44% (bloom keeps top 56%)
+    const STEM_TOP_INSET = 0.50;      // --stem-top-inset: 50% (stem keeps bottom 50%)
 
     const stageEl = document.getElementById("stage");
     const hooksLayer = document.getElementById("hooks");
@@ -795,6 +996,203 @@
       if (i != null && hookEls[i]) hookEls[i].classList.add("hook--active");
     }
 
+    // ---- Save: preview overlay + canvas export ------------------------------
+    const saveBtn = document.getElementById("save-btn");
+    const previewEl = document.getElementById("preview");
+    const previewClose = document.getElementById("preview-close");
+    const previewStageBg = document.getElementById("preview-bg");
+    const previewChecker = document.getElementById("preview-checker");
+    const previewWreath = document.getElementById("preview-wreath");
+    const previewPlaced = document.getElementById("preview-placed");
+    const previewBackdrops = document.getElementById("preview-backdrops");
+    const previewDownload = document.getElementById("preview-download");
+
+    // Backdrop chosen in the preview (independent of the on-screen plain stage).
+    const previewState = { backdrop: "moss" };
+    let previewBuilt = false;
+
+    function buildPreviewBackdrops() {
+      BACKDROPS.forEach((b, i) => {
+        if (i > 0) {
+          const sep = document.createElement("span");
+          sep.className = "pv-sep";
+          sep.setAttribute("aria-hidden", "true");
+          sep.textContent = "/";
+          previewBackdrops.appendChild(sep);
+        }
+        const btn = document.createElement("button");
+        btn.type = "button";
+        btn.className = "pv-toggle";
+        btn.dataset.id = b.id;
+        btn.textContent = b.label;
+        btn.setAttribute("aria-pressed", String(b.id === previewState.backdrop));
+        btn.addEventListener("click", () => {
+          previewState.backdrop = b.id;
+          applyPreviewBackdrop();
+        });
+        previewBackdrops.appendChild(btn);
+      });
+    }
+
+    function applyPreviewBackdrop() {
+      const choice = BACKDROPS.find((b) => b.id === previewState.backdrop);
+      const transparent = !choice || !choice.src;
+      previewChecker.hidden = !transparent;
+      if (transparent) {
+        previewStageBg.hidden = true;
+        previewStageBg.removeAttribute("src");
+      } else {
+        previewStageBg.hidden = false;
+        previewStageBg.src = choice.src;
+      }
+      syncPressed("preview-backdrops", previewState.backdrop);
+    }
+
+    function openPreview() {
+      if (!previewBuilt) { buildPreviewBackdrops(); previewBuilt = true; }
+      // Mirror the current crown: same wreath, and a faithful copy of the
+      // placed flowers (their inline left/top/--rot/z-index carry over).
+      const wreath = WREATHS.find((w) => w.id === state.wreath);
+      previewWreath.src = wreath ? wreath.src : "";
+      previewPlaced.innerHTML = placedLayer.innerHTML;
+      applyPreviewBackdrop();
+      previewEl.hidden = false;
+      previewClose.focus();
+      document.addEventListener("keydown", onPreviewKey);
+    }
+
+    function closePreview() {
+      previewEl.hidden = true;
+      document.removeEventListener("keydown", onPreviewKey);
+      saveBtn.focus();
+    }
+
+    function onPreviewKey(e) {
+      if (e.key === "Escape") closePreview();
+    }
+
+    // Build the ordered list of draw operations: one per filled hook, except the
+    // 6:00 flower which becomes two clipped passes (stem beneath all, bloom atop).
+    function buildDrawItems() {
+      const items = [];
+      placements.forEach((els, i) => {
+        if (!els) return;
+        const file = els[0].dataset.file;
+        const h = HOOKS[i];
+        if (i === SPLIT_HOOK) {
+          items.push({ z: 0, file, ang: h.angleDeg, x: h.xFrac, y: h.yFrac, clip: "stem" });
+          items.push({ z: 999, file, ang: h.angleDeg, x: h.xFrac, y: h.yFrac, clip: "bloom" });
+        } else {
+          items.push({ z: zForHook(i), file, ang: h.angleDeg, x: h.xFrac, y: h.yFrac, clip: "none" });
+        }
+      });
+      items.sort((a, b) => a.z - b.z);
+      return items;
+    }
+
+    function loadImage(src) {
+      return new Promise((resolve, reject) => {
+        const img = new Image();
+        img.onload = () => resolve(img);
+        img.onerror = () => reject(new Error("Failed to load " + src));
+        img.src = src;
+      });
+    }
+
+    // Redraw the crown onto a square canvas using the same maths as the screen:
+    // backdrop (or transparent), wreath ring, then flowers in spiral z-order.
+    async function renderCrownCanvas(size, backdropId) {
+      const canvas = document.createElement("canvas");
+      canvas.width = size;
+      canvas.height = size;
+      const ctx = canvas.getContext("2d");
+      ctx.imageSmoothingEnabled = true;
+      ctx.imageSmoothingQuality = "high";
+
+      const backdrop = BACKDROPS.find((b) => b.id === backdropId);
+      if (backdrop && backdrop.src) {
+        const bg = await loadImage(backdrop.src);
+        ctx.drawImage(bg, 0, 0, size, size); // square source over square canvas = cover
+      }
+
+      const wreath = WREATHS.find((w) => w.id === state.wreath);
+      if (wreath) {
+        const wi = await loadImage(wreath.src);
+        ctx.drawImage(wi, 0, 0, size, size);
+      }
+
+      const items = buildDrawItems();
+      const files = [...new Set(items.map((it) => it.file))];
+      const imgs = {};
+      await Promise.all(files.map(async (f) => { imgs[f] = await loadImage("flowers/" + f); }));
+
+      const d = PLACED_SIZE_RATIO * size; // placed flower diameter
+      for (const it of items) {
+        ctx.save();
+        ctx.translate(it.x * size, it.y * size);
+        ctx.rotate(((it.ang + 90) * Math.PI) / 180);
+        if (it.clip === "bloom") {
+          ctx.beginPath();
+          ctx.rect(-d / 2, -d / 2, d, d * (1 - BLOOM_BOTTOM_INSET));
+          ctx.clip();
+        } else if (it.clip === "stem") {
+          ctx.beginPath();
+          ctx.rect(-d / 2, -d / 2 + d * STEM_TOP_INSET, d, d * (1 - STEM_TOP_INSET));
+          ctx.clip();
+        }
+        ctx.drawImage(imgs[it.file], -d / 2, -d / 2, d, d);
+        ctx.restore();
+      }
+      return canvas;
+    }
+
+    function isIOS() {
+      return /iP(hone|ad|od)/.test(navigator.userAgent) ||
+        (navigator.platform === "MacIntel" && navigator.maxTouchPoints > 1);
+    }
+
+    // Trigger a download; fall back to opening the image where downloads are
+    // blocked (notably iOS Safari) so the user can long-press or share it.
+    function saveCanvas(canvas) {
+      canvas.toBlob((blob) => {
+        if (!blob) { window.open(canvas.toDataURL("image/png"), "_blank"); return; }
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement("a");
+        const canDownload = typeof a.download !== "undefined";
+        if (isIOS() || !canDownload) {
+          const win = window.open();
+          if (win) {
+            win.document.title = "solstice-crown.png";
+            win.document.body.style.margin = "0";
+            win.document.body.innerHTML =
+              '<img src="' + url + '" alt="Your solstice crown" style="width:100%;height:auto;display:block">';
+          } else {
+            window.location.href = url;
+          }
+          setTimeout(() => URL.revokeObjectURL(url), 60000);
+          return;
+        }
+        a.href = url;
+        a.download = "solstice-crown.png";
+        document.body.appendChild(a);
+        a.click();
+        a.remove();
+        setTimeout(() => URL.revokeObjectURL(url), 20000);
+      }, "image/png");
+    }
+
+    async function downloadCrown() {
+      previewDownload.disabled = true;
+      try {
+        const canvas = await renderCrownCanvas(1200, previewState.backdrop);
+        saveCanvas(canvas);
+      } catch (err) {
+        console.error("Could not render crown", err);
+      } finally {
+        previewDownload.disabled = false;
+      }
+    }
+
     // ---- Scroll cue: fade away once the user starts scrolling ---------------
     const scrollCue = document.getElementById("scroll-cue");
     function dismissScrollCue() {
@@ -827,6 +1225,12 @@
     refreshCrownUI();
     clearBtn.addEventListener("click", clearCrown);
     evaluateScrollCueFit();
+
+    saveBtn.addEventListener("click", openPreview);
+    previewClose.addEventListener("click", closePreview);
+    previewDownload.addEventListener("click", downloadCrown);
+    // Click on the dimmed area (outside the dialog) closes the preview.
+    previewEl.addEventListener("click", (e) => { if (e.target === previewEl) closePreview(); });
   </script>
 </body>
 </html>
