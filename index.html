@@ -554,7 +554,7 @@
     // ---- Weaving the crown --------------------------------------------------
     // Geometry constants, kept easy to tune per wreath art.
     const HOOK_COUNT = 24;        // evenly spaced anchor points
-    const RING_RADIUS_PCT = 38;   // hook circle radius, % of stage width from centre
+    const RING_RADIUS_PCT = 42;   // hook circle radius, % of stage width from centre
 
     const stageEl = document.getElementById("stage");
     const hooksLayer = document.getElementById("hooks");
@@ -597,7 +597,9 @@
         el.dataset.hook = index;
         el.style.left = (h.xFrac * 100) + "%";
         el.style.top = (h.yFrac * 100) + "%";
-        el.style.setProperty("--rot", h.angleDeg + "deg");
+        // Lie tangent to the ring: +90 from radial-outward so the bloom head
+        // leads clockwise and the stem trails behind it.
+        el.style.setProperty("--rot", (h.angleDeg + 90) + "deg");
         // z-index climbs clockwise so each flower overlaps its neighbour, woven
         el.style.zIndex = index + 1;
         const img = document.createElement("img");
